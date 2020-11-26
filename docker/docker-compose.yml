@@ -6,6 +6,7 @@ services:
     restart: always
     ports:
       - ${ARANGO_DB_PORT}:8529
+    network_mode: "bridge"
     environment:
       ARANGO_NO_AUTH: 1
 
@@ -14,6 +15,7 @@ services:
     restart: always
     ports:
       - ${SPLINE_REST_PORT}:8080
+    network_mode: "bridge"
     command: >
       bash -c "
         until curl --output /dev/null --silent --get --fail http://172.17.0.1:${ARANGO_DB_PORT}/_admin/server/availability
