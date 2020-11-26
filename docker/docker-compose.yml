@@ -24,12 +24,12 @@ services:
         echo downloading admin-cli &&
         curl -O -s https://repo1.maven.org/maven2/za/co/absa/spline/admin/${SPLINE_CORE_VERSION}/admin-${SPLINE_CORE_VERSION}.jar &&
         echo creating Spline database &&
-        java -jar ./admin-${SPLINE_CORE_VERSION}.jar db-init arangodb://arangodb:${ARANGO_DB_PORT}/spline -s &&
+        java -jar ./admin-${SPLINE_CORE_VERSION}.jar db-init arangodb://172.17.0.1:${ARANGO_DB_PORT}/spline -s &&
         echo starting Spline server &&
         catalina.sh run
       "
     environment:
-      SPLINE_DATABASE_CONNECTION_URL: 'arangodb://arangodb:${ARANGO_DB_PORT}/spline'
+      SPLINE_DATABASE_CONNECTION_URL: 'arangodb://172.17.0.1:${ARANGO_DB_PORT}/spline'
       # by default /dev/random is used which may block
       CATALINA_OPTS: "-Dsecurerandom.source=file:/dev/./urandom -Djava.security.egd=file:/dev/./urandom"
     links:
