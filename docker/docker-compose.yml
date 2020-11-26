@@ -42,7 +42,7 @@ services:
     restart: always
     environment:
       # The consumer URL is used by the web browser
-      SPLINE_CONSUMER_URL: 'http://localhost:${SPLINE_REST_PORT}/consumer'
+      SPLINE_CONSUMER_URL: 'http://${DOCKER_HOST_EXTERNAL:-localhost}:${SPLINE_REST_PORT}/consumer'
       # by default /dev/random is used which may block
       CATALINA_OPTS: "-Dsecurerandom.source=file:/dev/./urandom -Djava.security.egd=file:/dev/./urandom"
     ports:
