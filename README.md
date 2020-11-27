@@ -1,4 +1,18 @@
-# Spline - Lineage tracking - Quick Start
+Spline - data lineage tracking solution for data pipelines like Apache Spark and others
+
+---
+
+# Getting started
+
+The project consists of three main parts:
+-  [Spark Agent](https://github.com/AbsaOSS/spline-spark-agent) that sits on a driver capturing the data lineage from Spark jobs by analyzing the execution plans
+
+-  [Rest Gateway](https://github.com/AbsaOSS/spline) that receives the lineage data from agent and stores it in the database
+
+-  [Web UI](https://github.com/AbsaOSS/spline-ui) application that visualizes the stored data lineages
+
+![Spline diagram](https://user-images.githubusercontent.com/5530211/70050339-fd93f580-15ce-11ea-88b2-4d79ee30d494.png)
+
 
 ## TL;DR
 Spin up a Spline server in a Docker
