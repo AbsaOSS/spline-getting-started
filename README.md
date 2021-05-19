@@ -26,8 +26,8 @@ docker-compose up
 ```
 
 You can access Spline services on the following URLs:
-- Spline Web UI: http://localhost:8080
-- Spline Server: http://localhost:9090
+- Spline Web UI: http://localhost:9090
+- Spline Server: http://localhost:8080
 
 To access Spline UI from another host set `DOCKER_HOST_EXTERNAL` variable pointing to the current host before running `docker-compose`.
 Spline UI will propagate it to the user browser so that one will be able to connect to the Spline REST endpoint from the outside of this machine.
