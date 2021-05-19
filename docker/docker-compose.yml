@@ -37,6 +37,14 @@ services:
     links:
       - arangodb
 
+  agent:
+    image: absaoss/spline-spark-agent:${SPLINE_AGENT_VERSION}
+    network_mode: "bridge"
+    environment:
+      SPLINE_PRODUCER_URL: 'http://172.17.0.1:${SPLINE_REST_PORT}/producer'
+    links:
+      - spline
+
   ui:
     image: absaoss/spline-web-ui:${SPLINE_UI_VERSION}
     restart: always
