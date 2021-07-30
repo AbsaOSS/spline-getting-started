@@ -40,6 +40,20 @@ services:
   agent:
     image: absaoss/spline-spark-agent:${SPLINE_AGENT_VERSION}
     network_mode: "bridge"
+    command: >
+      bash -c "
+        until curl --output /dev/null --silent --get --fail http://172.17.0.1:${SPLINE_REST_PORT}
+        do
+          echo waiting for spline
+          sleep 5
+        done
+        mvn test -P examples \
+          -D spline.producer.url=$${SPLINE_PRODUCER_URL} \
+          -D spline.mode=$${SPLINE_MODE} \
+          -D http.proxyHost=$${HTTP_PROXY_HOST} \
+          -D http.proxyPort=$${HTTP_PROXY_PORT} \
+          -D http.nonProxyHosts=$${HTTP_NON_PROXY_HOSTS}
+      "
     environment:
       SPLINE_PRODUCER_URL: 'http://172.17.0.1:${SPLINE_REST_PORT}/producer'
     links:
