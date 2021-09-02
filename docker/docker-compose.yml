@@ -10,6 +10,23 @@ services:
     environment:
       ARANGO_NO_AUTH: 1
 
+  admin:
+    image: absaoss/spline-admin:${SPLINE_CORE_VERSION}
+    network_mode: "bridge"
+    entrypoint: >
+      bash -c "
+        apt-get update
+        apt-get -y install curl
+        until curl --output /dev/null --silent --get --fail http://172.17.0.1:${ARANGO_DB_PORT}/_admin/server/availability
+        do
+          echo waiting for arango db
+          sleep 5
+        done
+        java -jar admin.jar db-init arangodb://172.17.0.1:${ARANGO_DB_PORT}/spline -s
+      "
+    links:
+      - arangodb
+
   spline:
     image: absaoss/spline-rest-server:${SPLINE_CORE_VERSION}
     restart: always
@@ -18,16 +35,13 @@ services:
     network_mode: "bridge"
     command: >
       bash -c "
+        apt-get update
+        apt-get -y install curl
         until curl --output /dev/null --silent --get --fail http://172.17.0.1:${ARANGO_DB_PORT}/_admin/server/availability
         do
           echo waiting for arango db
           sleep 5
         done
-        echo downloading admin-cli &&
-        curl -O -s https://repo1.maven.org/maven2/za/co/absa/spline/admin/${SPLINE_CORE_VERSION}/admin-${SPLINE_CORE_VERSION}.jar &&
-        echo creating Spline database &&
-        java -jar ./admin-${SPLINE_CORE_VERSION}.jar db-init arangodb://172.17.0.1:${ARANGO_DB_PORT}/spline -s &&
-        echo starting Spline server &&
         catalina.sh run
       "
     environment:
