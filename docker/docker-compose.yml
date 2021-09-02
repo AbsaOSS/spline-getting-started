@@ -37,7 +37,7 @@ services:
       bash -c "
         apt-get update
         apt-get -y install curl
-        until curl --output /dev/null --silent --get --fail http://172.17.0.1:${ARANGO_DB_PORT}/_admin/server/availability
+        until curl --output /dev/null --silent --get --fail http://172.17.0.1:${ARANGO_DB_PORT}/_db/spline/_admin/server/availability
         do
           echo waiting for arangodb
           sleep 5
@@ -56,7 +56,7 @@ services:
     network_mode: "bridge"
     command: >
       bash -c "
-        until curl --output /dev/null --silent --get --fail http://172.17.0.1:${SPLINE_REST_PORT}
+        until curl --output /dev/null --silent --get --fail http://172.17.0.1:${SPLINE_REST_PORT}/about/readiness
         do
           echo waiting for spline
           sleep 5
