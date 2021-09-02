@@ -39,7 +39,7 @@ services:
         apt-get -y install curl
         until curl --output /dev/null --silent --get --fail http://172.17.0.1:${ARANGO_DB_PORT}/_admin/server/availability
         do
-          echo waiting for arango db
+          echo waiting for arangodb
           sleep 5
         done
         catalina.sh run
