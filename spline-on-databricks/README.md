@@ -87,13 +87,14 @@ The cluster is ready to use, so we can create a new Notebook and start writing o
 
 We're almost ready to run some Spark jobs. The last step we need to do is to enable linage tracking on the Spark session.
 
+In Scala:
 ```scala
 import za.co.absa.spline.harvester.SparkLineageInitializer._
 
 spark.enableLineageTracking()
 ```
 
-Or in pyspark:
+In PySpark:
 
 ```python
 sc._jvm.za.co.absa.spline.harvester.SparkLineageInitializer.enableLineageTracking(spark._jsparkSession)
