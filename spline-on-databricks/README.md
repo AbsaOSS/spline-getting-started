@@ -93,6 +93,12 @@ import za.co.absa.spline.harvester.SparkLineageInitializer._
 spark.enableLineageTracking()
 ```
 
+Or in pyspark:
+
+```python
+sc._jvm.za.co.absa.spline.harvester.SparkLineageInitializer.enableLineageTracking(spark._jsparkSession)
+```
+
 This step has to be done once per Spark session. It could also be done via setting the `spark.sql.queryExecutionListeners` Spark property in the Spark
 cluster configuration (see https://github.com/AbsaOSS/spline-spark-agent#initialization), but unfortunately it doesn't work on Databricks. When the
 Databricks cluster is booting, the Spark session initializes _before_ the necessary agent library is actually installed on the cluster, resulting in
