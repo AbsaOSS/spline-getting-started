@@ -48,6 +48,10 @@ There are three ways how to customize default Spline Spark Agent behavior. Choos
 3. If the extension API isn't enough then fork the project, replace the Maven coordinates with your custom ones,
    and [build](https://github.com/AbsaOSS/spline-spark-agent#building-for-different-scala-and-spark-versions) the agent as your own JAR.
 
+## More Howto's
+- [Running Spline on Databricks Notebook](spline-on-databricks)
+- [Setting up Spline server on AWS](spline-on-AWS-demo-setup)
+
 ---
 
 For more information about Spline see - https://absaoss.github.io/spline/
