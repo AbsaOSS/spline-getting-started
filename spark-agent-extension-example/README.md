@@ -58,7 +58,7 @@ The built JAR-files are located in the `target/scala-$VER/` folder, one per give
 
 ### Clean up
 
-Remove all generated file and build artifacts
+Remove all generated files and build artifacts
 
 ```shell
 make clean
@@ -66,11 +66,14 @@ make clean
 
 ## Usage
 
-Add the built JAR-file to the Spark driver classpath using any of available approaches, including but not limited to:
+1. Add the built JAR-file to the Spark driver classpath using any of available approaches, including but not limited to:
+  - Copy the JAR-file to the `$SPARK_HOME/jars/` directory
+  - Include it into the `-jars` param of the `spark-submit`, `spark-shell` or `pyspark` command line
+  - Unpack the JAR-file and copy its content into your own Spark job fat-JAR, if you have one.
 
-- Copy the JAR-file to the `$SPARK_HOME/jars/` directory
-- Include it into the `-jars` param of the `spark-submit`, `spark-shell` or `pyspark` command line
-- Unpack the JAR-file and copy its content into your own Spark job fat-JAR, if you have one.
+2. Register your component in the config. The majority of custom component types (with exception for _Plugin_ trait) require explicit registering in
+   the [Agent configuration](https://github.com/AbsaOSS/spline-spark-agent#configuration).
+   See [this section](https://github.com/AbsaOSS/spline-spark-agent#creating-your-own-dispatcher) for example.
 
 ---
 

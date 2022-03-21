@@ -37,6 +37,19 @@ Spline UI will propagate it to the user browser so that one will be able to conn
 DOCKER_HOST_EXTERNAL=192.168.1.222 docker-compose up
 ```
 
+## How to extend/customize _Spline Spark Agent_ behavior
+
+There are three ways how to customize default Spline Spark Agent behavior. Choose the one that fits you needs better.
+
+1. A lot of things can be customized declaratively, without any coding needed, by just tweaking
+   the [Agent configuration](https://github.com/AbsaOSS/spline-spark-agent#configuration).
+2. Spline agent is designed for extension, so the chances are it's enough to override some method or implement some trait to achieve desired behavior,
+   and attach it as an extension module to your Spark application. See the [example extension project](spark-agent-extension-example).
+3. If the extension API isn't enough then fork the project, replace the Maven coordinates with your custom ones,
+   and [build](https://github.com/AbsaOSS/spline-spark-agent#building-for-different-scala-and-spark-versions) the agent as your own JAR.
+
+---
+
 For more information about Spline see - https://absaoss.github.io/spline/
 
 Enjoy.
