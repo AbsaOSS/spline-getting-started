@@ -23,7 +23,7 @@ One project may have multiple _Dockerfiles_ and hence multiple Docker images wil
     ```shell
     mvn install \
       -D skipTests \                  # Skip unit and integration tests
-      -D docker \                     # Activate "docker" profile
+      -P docker \                     # Activate "docker" profile
       -D dockerfile.repositoryUrl=my  # The name prefix of the final Docker image(s)
     ```
 Done.
