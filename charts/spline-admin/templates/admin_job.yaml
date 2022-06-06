@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Release.Name }}
+spec:
+  backoffLimit: 4
+  completions: 1
+  # ttlSecondsAfterFinished: 0
+  activeDeadlineSeconds: 1800
+  template:
+    spec:
+      containers:
+      - name: initdb
+        image: {{ .Values.image }}:{{ .Values.imageTag }}
+        args: 
+          - {{ .Values.cmd }}
+          - {{ .Values.arango.url }}/{{ .Values.arango.database }}
+          - {{ .Values.extraArgs }}
+        resources:
+        {{- toYaml .Values.resources | nindent 10 }}
+      restartPolicy: Never

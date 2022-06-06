@@ -1,0 +1,11 @@
+arango:
+  url: "arangodb://root:MySuperStrongPassword@arangodb:8529"
+  database: "spline"
+
+cmd: db-init
+extraArgs: "-s"
+imagePullPolicy: Always
+image: "absaoss/spline-admin"
+imageTag: "0.7.5"
+
+resources:

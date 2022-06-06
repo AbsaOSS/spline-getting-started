@@ -1,0 +1,49 @@
+apiVersion: "database.arangodb.com/v1alpha"
+kind: "ArangoDeployment"
+metadata:
+  name: {{ .Release.Name | quote }}
+spec:
+  mode: {{ .Values.mode }}
+  environment: {{ .Values.environment }}
+  externalAccess:
+    type: "None"
+  tls:
+    caSecretName: {{ .Values.tls.caSecretName  }}
+    # ttl: "2160h"
+{{- if .Values.annotations }}
+  annotations:
+{{ toYaml .Values.annotations | indent 4 }}
+{{- end }}
+  bootstrap:
+    passwordSecretNames:
+      root: {{ .Values.rootPassword }}
+  agents:
+    count: {{ .Values.agents.replicasCount }}
+    args:
+      - --log.level={{ .Values.agents.logLevel }}
+    {{- if .Values.agents.persistence.enable }}
+    resources:
+      requests:
+        storage: {{ .Values.agents.persistence.size }}
+    storageClassName: {{ .Values.agents.persistence.storageClassName }}
+    {{- end }}
+  dbservers:
+    count: {{ .Values.dbservers.replicasCount }}
+    args:
+      - --log.level={{ .Values.dbservers.logLevel }}
+    {{- if .Values.dbservers.persistence.enable }}
+    resources:
+      requests:
+        storage: {{ .Values.dbservers.persistence.size }}
+    storageClassName: {{ .Values.dbservers.persistence.storageClassName }}
+    {{- end }}
+  coordinators:
+    count: {{ .Values.coordinators.replicasCount }}
+    args:
+      - --log.level={{ .Values.coordinators.logLevel }}
+  image: {{ .Values.repository }}:{{ .Values.tag }}
+  metrics:
+    enabled: {{ .Values.metrics.enabled }}
+    image: {{ .Values.metrics.image }}
+    mode: {{ .Values.metrics.mode }}
+    tls: {{ .Values.metrics.tls }}

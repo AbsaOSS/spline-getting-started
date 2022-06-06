@@ -1,0 +1,61 @@
+image: "absaoss/spline-web-ui"
+imageTag: "0.7.4"
+
+#IfNotPresent #Always
+imagePullPolicy: IfNotPresent
+
+replicaCount: 1
+
+annotations: {}
+nodeSelector: {}
+
+splineConsumerUrl: "http://127.0.0.1:8080/consumer"
+
+service:
+  type: "ClusterIP"
+  port: 8080
+  portType: TCP
+  annotations: {}
+
+ingress:
+  enabled: true
+  host: "spline.example.com"
+  path: "/"
+  ingressClass: "ingress"
+  annotations:
+  #  kubernetes.io/ingress.class: "ingress"  
+  tls:
+
+
+livenessProbe:
+  enabled: true
+  path: "/app/assets/config.json"
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 6
+  successThreshold: 1
+
+readinessProbe:
+  enabled: true
+  path: "/app/assets/config.json"
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 6
+  successThreshold: 1
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 1Gi
+  requests:
+    cpu: 200m
+    memory: 512Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  cpuAverageUtilization: 50
+  memoryAverageUtilization: 70

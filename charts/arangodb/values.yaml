@@ -1,0 +1,78 @@
+# mongo-express:0.49.0
+registry: "docker.io"
+repository: "arangodb"
+tag: "3.9.1"
+
+mode: "Cluster"
+environment: "Development"
+rootPassword: "Auto"
+
+auth:
+  username: "root"
+  password: "MySuperStrongPassword"
+
+tls:
+  caSecretName: "None"
+
+## Below applyable only for "mode: Cluster"
+agents:
+  replicasCount: 3
+  logLevel: "error"
+  overrideDetectedTotalMemory: true
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+  persistence:
+    enable: false
+    size: "1Gi"
+    storageClassName: "gp2"
+
+dbservers:
+  replicasCount: 3
+  logLevel: "error"
+  overrideDetectedTotalMemory: true
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 512Mi
+  persistence:
+    enable: false
+    size: "1Gi"
+    storageClassName: "gp2"
+
+coordinators:
+  replicasCount: 3
+  logLevel: "error"
+  overrideDetectedTotalMemory: true
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 512Mi
+
+metrics:
+  enabled: false
+  image: arangodb/arangodb-exporter:0.1.8
+  mode: "exporter"
+  tls: false
+
+service:
+  port: 8529
+
+ingress:
+  enabled: false
+  host: "arangodb.example.com"
+  path: "/"
+  annotations: 
+    external-dns.alpha.kubernetes.io/hostname: "arangodb.example.com"
+    kubernetes.io/ingress.class: "nginx"
+    #cert-manager.io/cluster-issuer: cert-manager-issuer
