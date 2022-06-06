@@ -1,0 +1,64 @@
+image: "absaoss/spline-rest-server"
+imageTag: "0.7.5"
+#IfNotPresent #Always
+imagePullPolicy: IfNotPresent
+
+replicaCount: 1
+
+arango:
+  url: "arangodb://root:MySuperStrongPassword@arangodb:8529"
+  database: "spline"
+
+JAVA_OPTS: "-Xmx512m"
+
+annotations: {}
+nodeSelector: {}
+
+service:
+  type: "ClusterIP"
+  port: 8080
+  portType: TCP
+  nodePort: 
+  annotations: {}
+
+ingress:
+  enabled: false
+  host: "spline-api.example.com"
+  path: "/"
+  ingressClass: "nginx"
+  annotations:
+  #  kubernetes.io/ingress.class: "nginx"  
+  tls:
+
+livenessProbe:
+  enabled: true
+  path: "/about/liveness"
+  initialDelaySeconds: 60
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 6
+  successThreshold: 1
+
+readinessProbe:
+  enabled: true
+  path: "/about/readiness"
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 6
+  successThreshold: 1
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 2Gi
+  requests:
+    cpu: 300m
+    memory: 1Gi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 5
+  cpuAverageUtilization: 70
+  memoryAverageUtilization: 80
