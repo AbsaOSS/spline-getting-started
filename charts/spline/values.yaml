@@ -14,20 +14,6 @@ JAVA_OPTS: "-Xmx512m"
 annotations: {}
 nodeSelector: {}
 
-init:
-  enabled: true
-  cmd: db-init
-  extraArgs: "-s"
-  imagePullPolicy: Always
-  image: "absaoss/spline-admin"
-
-updatedb:
-  enabled: false
-  cmd: db-upgrade
-  extraArgs: ""
-  imagePullPolicy: Always
-  image: "absaoss/spline-admin"
-
 service:
   type: "ClusterIP"
   port: 8080

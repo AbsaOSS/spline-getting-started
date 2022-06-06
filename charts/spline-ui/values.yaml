@@ -18,14 +18,13 @@ service:
   annotations: {}
 
 ingress:
-  enabled: true
+  enabled: false
   host: "spline.example.com"
   path: "/"
   ingressClass: "ingress"
   annotations:
   #  kubernetes.io/ingress.class: "ingress"  
   tls:
-
 
 livenessProbe:
   enabled: true

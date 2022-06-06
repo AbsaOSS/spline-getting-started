@@ -40,6 +40,7 @@ helm upgrade --install spline spline \
     --set arango.url="arangodb://root:$ARANGO_PASSWORD@arangodb:8529" \
     --set ingress.enabled="true" \
     --set ingress.host="$API" \
+    --set ingress.ingressClass="nginx" \
     -n $NS
 
 # API=$(kubectl get svc -n $NS spline -o jsonpath="{.*.loadBalancer.ingress[*].hostname}")
@@ -49,4 +50,5 @@ helm upgrade --install spline-ui spline-ui \
     --set splineConsumerUrl="http://$API/consumer" \
     --set ingress.enabled="true" \
     --set ingress.host="$UI" \
+    --set ingress.ingressClass="ingress" \
     -n $NS
