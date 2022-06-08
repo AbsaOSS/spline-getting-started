@@ -3,7 +3,7 @@ version: '3'
 services:
   arangodb:
     image: arangodb:${ARANGO_DB_VERSION}
-    restart: always
+    restart: on-failure
     ports:
       - ${ARANGO_DB_PORT}:8529
     network_mode: "bridge"
@@ -12,28 +12,39 @@ services:
 
   spline:
     image: absaoss/spline-rest-server:${SPLINE_CORE_VERSION}
-    restart: always
+    restart: on-failure
     ports:
       - ${SPLINE_REST_PORT}:8080
     network_mode: "bridge"
     command: >
       bash -c "
-        until curl --output /dev/null --silent --get --fail http://172.17.0.1:${ARANGO_DB_PORT}/_admin/server/availability
+        until curl --output /dev/null --silent --get --fail http://172.17.0.1:${ARANGO_DB_PORT}/_db/spline/_admin/server/availability
         do
-          echo waiting for arango db
+          echo waiting for 'spline' database to be ready
           sleep 5
         done
-        echo downloading admin-cli &&
-        curl -O -s https://repo1.maven.org/maven2/za/co/absa/spline/admin/${SPLINE_CORE_VERSION}/admin-${SPLINE_CORE_VERSION}.jar &&
-        echo creating Spline database &&
-        java -jar ./admin-${SPLINE_CORE_VERSION}.jar db-init arangodb://172.17.0.1:${ARANGO_DB_PORT}/spline -s &&
-        echo starting Spline server &&
         catalina.sh run
       "
     environment:
       SPLINE_DATABASE_CONNECTION_URL: 'arangodb://172.17.0.1:${ARANGO_DB_PORT}/spline'
       # by default /dev/random is used which may block
       CATALINA_OPTS: "-Dsecurerandom.source=file:/dev/./urandom -Djava.security.egd=file:/dev/./urandom"
+    links:
+      - arangodb
+
+  spline-init-db:
+    image: absaoss/spline-admin:${SPLINE_CORE_VERSION}
+    restart: on-failure
+    network_mode: "bridge"
+    entrypoint: >
+      tini -g -- bash -c "
+        until curl --output /dev/null --silent --get --fail http://172.17.0.1:${ARANGO_DB_PORT}/_admin/server/availability
+        do
+          echo waiting for ArangoDB server to be ready
+          sleep 5
+        done
+        bash ./entrypoint.sh db-init arangodb://172.17.0.1:${ARANGO_DB_PORT}/spline -s
+      "
     links:
       - arangodb
 
@@ -65,7 +76,7 @@ services:
 
   ui:
     image: absaoss/spline-web-ui:${SPLINE_UI_VERSION}
-    restart: always
+    restart: on-failure
     environment:
       # The consumer URL is used by the web browser
       SPLINE_CONSUMER_URL: 'http://${DOCKER_HOST_EXTERNAL:-localhost}:${SPLINE_REST_PORT}/consumer'
