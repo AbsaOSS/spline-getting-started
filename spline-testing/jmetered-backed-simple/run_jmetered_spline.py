@@ -59,7 +59,9 @@ def run_spline_in_docker():
     print(f"Building Spline docker image from dir {os.getcwd()}")
     (img, build_logs) = client.images.build(path=".", tag="spline_for_docker")
     print(f"Running Spline docker image {img.id}")
-    container = client.containers.run(img, ports={"8080/tcp": "8080", "8009/tcp": "8009"}, detach=True)
+
+    variables = ["SPLINE_DATABASE_CONNECTION_URL=arangodb://localhost/spline"]
+    container = client.containers.run(img, environment=variables, ports={"8080/tcp": "8080", "8009/tcp": "8009"}, detach=True)
     print(f"Spline started as docker container, with ID {container.id}")
 
     # backend should be running at http://localhost:8080/spline-rest-server-1.0.0-SNAPSHOT/
