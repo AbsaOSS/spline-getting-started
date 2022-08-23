@@ -50,6 +50,7 @@ def build_spline(branch: str = "develop"):
 
 def init_arango():
     print("Initializing spline DB in arangoDB.")
+    os.chdir(f"{root_dir}/spline")
     subprocess.run(RUN_ARANGODB_SPLINE_INIT)
     print("DB initialization finished")
 
@@ -57,14 +58,17 @@ def init_arango():
 def run_spline_in_docker():
     os.chdir(f"{root_dir}/spline/rest-gateway")
     print(f"Building Spline docker image from dir {os.getcwd()}")
-    (img, build_logs) = client.images.build(path=".", tag="spline_for_docker")
+    buildargs = ["PROJECT_BUILD_FINAL_NAME=spline-rest-server-1.0.0-SNAPSHOT"]
+    (img, build_logs) = client.images.build(path=".", buildargs=buildargs, tag="spline_for_docker")  # this hangs, but I don't know why
     print(f"Running Spline docker image {img.id}")
 
-    variables = ["SPLINE_DATABASE_CONNECTION_URL=arangodb://localhost/spline"]
+
+    variables = ["SPLINE_DATABASE_CONNECTION_URL=arangodb://172.17.0.1/spline"]
     container = client.containers.run(img, environment=variables, ports={"8080/tcp": "8080", "8009/tcp": "8009"}, detach=True)
     print(f"Spline started as docker container, with ID {container.id}")
 
     # backend should be running at http://localhost:8080/spline-rest-server-1.0.0-SNAPSHOT/
+
 
 if __name__ == '__main__':
     client = docker.from_env()
