@@ -1,0 +1,98 @@
+---
+version: '3'
+services:
+  arangodb:
+    image: arangodb:${ARANGO_DB_VERSION}
+    restart: on-failure
+    ports:
+      - ${ARANGO_DB_PORT}:8529
+    network_mode: "bridge"
+    environment:
+      ARANGO_NO_AUTH: 1
+
+  spline:
+    build:
+      context: ./spline/rest-gateway
+      args:
+        PROJECT_BUILD_FINAL_NAME: spline-rest-server-${SPLINE_CORE_VERSION}
+    image: testing-spline-rest-server:${SPLINE_CORE_VERSION} # locally built and used
+    restart: on-failure
+    ports:
+      - ${SPLINE_REST_PORT}:8080
+    network_mode: "bridge"
+    command: >
+      bash -c "
+        until curl --output /dev/null --silent --get --fail http://172.17.0.1:${ARANGO_DB_PORT}/_db/spline/_admin/server/availability
+        do
+          echo waiting for 'spline' database to be ready at 172.17.0.1:${ARANGO_DB_PORT}
+          sleep 5
+        done
+        catalina.sh run
+      "
+    environment:
+      SPLINE_DATABASE_CONNECTION_URL: 'arangodb://172.17.0.1:${ARANGO_DB_PORT}/spline'
+      # by default /dev/random is used which may block
+      CATALINA_OPTS: "-Dsecurerandom.source=file:/dev/./urandom -Djava.security.egd=file:/dev/./urandom"
+    links:
+      - arangodb
+
+  spline-init-db:
+    build:
+      context: ./spline/admin
+      args:
+        PROJECT_BUILD_FINAL_NAME: admin-${SPLINE_CORE_VERSION}
+        IMAGE_NAME: spline-admin
+    image: testing-spline-db-admin:${SPLINE_CORE_VERSION} # locally built and used
+    restart: on-failure
+    network_mode: "bridge"
+    entrypoint: >
+      tini -g -- bash -c "
+        until curl --output /dev/null --silent --get --fail http://172.17.0.1:${ARANGO_DB_PORT}/_admin/server/availability
+        do
+          echo waiting for ArangoDB server to be ready
+          sleep 5
+        done
+        bash ./entrypoint.sh db-init arangodb://172.17.0.1:${ARANGO_DB_PORT}/spline -s
+      "
+    links:
+      - arangodb
+
+  agent:
+    image: absaoss/spline-spark-agent:${SPLINE_AGENT_VERSION}
+    network_mode: "bridge"
+    command: >
+      bash -c "
+        if [ ! -z "$SEED" ]
+        then
+          until curl --output /dev/null --silent --get --fail http://172.17.0.1:${SPLINE_REST_PORT}
+          do
+            echo waiting for spline
+            sleep 5
+          done
+          mvn test -P examples \
+            -D spline.producer.url=$${SPLINE_PRODUCER_URL} \
+            -D spline.mode=$${SPLINE_MODE} \
+            -D http.proxyHost=$${HTTP_PROXY_HOST} \
+            -D http.proxyPort=$${HTTP_PROXY_PORT} \
+            -D http.nonProxyHosts=$${HTTP_NON_PROXY_HOSTS}
+        fi
+      "
+    environment:
+      SEED: ${SEED} # Controls if the agent examples should run on startup up
+      SPLINE_PRODUCER_URL: 'http://172.17.0.1:${SPLINE_REST_PORT}/producer'
+    links:
+      - spline
+
+  ui:
+    image: absaoss/spline-web-ui:${SPLINE_UI_VERSION}
+    restart: on-failure
+    environment:
+      # The consumer URL is used by the web browser
+      SPLINE_CONSUMER_URL: 'http://${DOCKER_HOST_EXTERNAL:-localhost}:${SPLINE_REST_PORT}/consumer'
+      # by default /dev/random is used which may block
+      CATALINA_OPTS: "-Dsecurerandom.source=file:/dev/./urandom -Djava.security.egd=file:/dev/./urandom"
+    ports:
+      - ${SPLINE_UI_PORT}:8080
+    links:
+      - spline
+
