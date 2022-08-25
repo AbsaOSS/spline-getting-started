@@ -19,15 +19,6 @@ BUILD_SPLINE_FOR_DOCKER = "docker build -t spline_for_docker"
 # client =
 # root_dir =
 
-def run_arangodb() -> str:
-    print(f"Running arango db in docker")
-    img = client.images.pull("arangodb/arangodb", tag="3.9.2")
-    variables = ["ARANGO_NO_AUTH=1"]
-    container = client.containers.run(img, environment=variables, ports={"8529/tcp": "8529"}, detach=True)
-    print(f"ArangoDB started as docker container, with ID {container.id}")
-
-    return container.id
-
 
 def build_spline(branch: str = "develop"):
     print(f"Getting spline (via: '{GIT_CLONE_SPLINE}')")
@@ -49,62 +40,34 @@ def build_spline(branch: str = "develop"):
     print("Spline build complete.")
 
 
-# def init_arango():
-#     print("Initializing spline DB in arangoDB.")
-#     os.chdir(f"{root_dir}/spline")
-#     subprocess.run(RUN_ARANGODB_SPLINE_INIT)
-#     print("DB initialization finished")
-
-
-# def run_spline_in_docker():
-    # os.chdir(f"{root_dir}/spline/rest-gateway")
-    # print(f"Building Spline docker image from dir {os.getcwd()}")
-    # buildargs = ["PROJECT_BUILD_FINAL_NAME=spline-rest-server-1.0.0-SNAPSHOT"]
-    # (img, build_logs) = client.images.build(path=".", buildargs=buildargs, tag="spline_for_docker")  # this hangs, but I don't know why
-    # print(f"Running Spline docker image {img.id}")
-    #
-    #
-    # variables = ["SPLINE_DATABASE_CONNECTION_URL=arangodb://172.17.0.1/spline"]
-    # container = client.containers.run(img, environment=variables, ports={"8080/tcp": "8080", "8009/tcp": "8009"}, detach=True)
-    # print(f"Spline started as docker container, with ID {container.id}")
-
-    # backend should be running at http://localhost:8080/spline-rest-server-1.0.0-SNAPSHOT/
-
-
-def run_docker_compose():
+def run_docker_compose() -> object:
     os.chdir(root_dir)
     # subprocess.run("docker-compose up", )
 
-    etcd = subprocess.Popen('docker-compose up'.split())  # continue immediately
-    # next_cmd_returncode = subprocess.call('next_cmd')  # wait for it
-    # ... run more python here ...
-    print(etcd)
-
-    time.sleep(200)  # TODO replace with run of measurement
-    etcd.terminate()
-    etcd.wait()
-
-
+    handle = subprocess.Popen('docker-compose up'.split())  # continue immediately
+    time.sleep(20)  # timeout to start the services
     print("docker compose up done")
-    # or just "docker-compose down"
+    return handle
+
+
+def cleanup_docker_compose():
+    handle = subprocess.Popen('docker-compose down'.split())
+    # todo cleanup images?
+    # handle.terminate()
+    # handle.wait()
+
+    print("docker compose down done")
+
 
 if __name__ == '__main__':
     client = docker.from_env()
     root_dir = os.getcwd()
-
-    #run_arangodb() # remove
-
     spine_branch = "feature/adding-curl-rest-gw-docker"
-    build_spline(spine_branch)  # TODO use develop when merged?
 
-    #init_arango() # remove
-    #run_spline_in_docker() # remove
+    #build_spline(spine_branch)  # TODO use develop when merged?
     run_docker_compose()
 
-    # kill arango
-    # TODO
+    #cleanup_docker_compose()
 
-    # spline codebase cleanup
-    # TODO
-
+    print("DONE")
 

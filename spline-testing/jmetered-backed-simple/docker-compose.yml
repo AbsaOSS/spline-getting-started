@@ -29,6 +29,11 @@ services:
         done
         catalina.sh run
       "
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://172.17.0.1:${SPLINE_REST_PORT}"]
+      interval: 10s
+      timeout: 20s
+      retries: 20
     environment:
       SPLINE_DATABASE_CONNECTION_URL: 'arangodb://172.17.0.1:${ARANGO_DB_PORT}/spline'
       # by default /dev/random is used which may block
@@ -49,7 +54,7 @@ services:
       tini -g -- bash -c "
         until curl --output /dev/null --silent --get --fail http://172.17.0.1:${ARANGO_DB_PORT}/_admin/server/availability
         do
-          echo waiting for ArangoDB server to be ready
+          echo waiting for ArangoDB server to be ready to run spline-admin:${SPLINE_CORE_VERSION} to init the spline DB
           sleep 5
         done
         bash ./entrypoint.sh db-init arangodb://172.17.0.1:${ARANGO_DB_PORT}/spline -s
@@ -57,31 +62,18 @@ services:
     links:
       - arangodb
 
-  agent:
-    image: absaoss/spline-spark-agent:${SPLINE_AGENT_VERSION}
+  jmeter:
+    image: justb4/jmeter:${JMETER_VERSION}
     network_mode: "bridge"
     command: >
-      bash -c "
-        if [ ! -z "$SEED" ]
-        then
-          until curl --output /dev/null --silent --get --fail http://172.17.0.1:${SPLINE_REST_PORT}
-          do
-            echo waiting for spline
-            sleep 5
-          done
-          mvn test -P examples \
-            -D spline.producer.url=$${SPLINE_PRODUCER_URL} \
-            -D spline.mode=$${SPLINE_MODE} \
-            -D http.proxyHost=$${HTTP_PROXY_HOST} \
-            -D http.proxyPort=$${HTTP_PROXY_PORT} \
-            -D http.nonProxyHosts=$${HTTP_NON_PROXY_HOSTS}
-        fi
-      "
-    environment:
-      SEED: ${SEED} # Controls if the agent examples should run on startup up
-      SPLINE_PRODUCER_URL: 'http://172.17.0.1:${SPLINE_REST_PORT}/producer'
+      -n -t /var/jmeter/lineage-multi.jmx -l /var/jmeter/res.txt -J"config_file=/var/jmeter/triangle-lineage-5reads-3-10@10ops-4attr.json.txt" -Jspline_base=http://172.17.0.1:${SPLINE_REST_PORT}
+    volumes:
+      - .:/var/jmeter
     links:
       - spline
+    depends_on:
+      spline:
+        condition: service_healthy
 
   ui:
     image: absaoss/spline-web-ui:${SPLINE_UI_VERSION}
