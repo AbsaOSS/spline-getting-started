@@ -40,23 +40,23 @@ def build_spline(branch: str = "develop"):
     print("Spline build complete.")
 
 
-def run_docker_compose() -> object:
+def run_docker_compose():
     os.chdir(root_dir)
-    # subprocess.run("docker-compose up", )
+    # --exit-code-from = reports exit code from this container
+    # AND implies '--abort-on-container-exit' - will 'docker-compose down' after any container has exited
+    subprocess.run("docker-compose up --exit-code-from jmeter")
+    print("docker-compose up done")
 
-    handle = subprocess.Popen('docker-compose up'.split())  # continue immediately
-    time.sleep(20)  # timeout to start the services
-    print("docker compose up done")
-    return handle
+    # alternative, but ugly
+    # handle = subprocess.Popen('docker-compose up'.split())  # continue immediately
+    # time.sleep(200)  # timeout enough to start the services
 
 
-def cleanup_docker_compose():
-    handle = subprocess.Popen('docker-compose down'.split())
+def cleanup_docker():
+    # subprocess.run('docker-compose down'.split())
     # todo cleanup images?
-    # handle.terminate()
-    # handle.wait()
 
-    print("docker compose down done")
+    print("docker-compose cleanup finished")
 
 
 if __name__ == '__main__':
@@ -64,10 +64,10 @@ if __name__ == '__main__':
     root_dir = os.getcwd()
     spine_branch = "feature/adding-curl-rest-gw-docker"
 
-    #build_spline(spine_branch)  # TODO use develop when merged?
+    build_spline(spine_branch)  # TODO use develop when merged?
     run_docker_compose()
 
-    #cleanup_docker_compose()
+    cleanup_docker()
 
-    print("DONE")
+    print("ALL DONE")
 

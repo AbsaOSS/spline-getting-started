@@ -57,8 +57,9 @@ services:
           echo waiting for ArangoDB server to be ready to run spline-admin:${SPLINE_CORE_VERSION} to init the spline DB
           sleep 5
         done
-        bash ./entrypoint.sh db-init arangodb://172.17.0.1:${ARANGO_DB_PORT}/spline -s
+        bash ./entrypoint.sh db-init arangodb://172.17.0.1:${ARANGO_DB_PORT}/spline -s && sleep infinity
       "
+    # ^ Waiting for jmeter image to finish first with measurements, teardown only after that
     links:
       - arangodb
 
