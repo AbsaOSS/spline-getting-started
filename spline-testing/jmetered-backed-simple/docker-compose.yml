@@ -66,8 +66,15 @@ services:
   jmeter:
     image: justb4/jmeter:${JMETER_VERSION}
     network_mode: "bridge"
+    entrypoint: busybox
+    # escaping like $${item} is needed, just '$item' would be replaced by docker-compose. https://github.com/docker/compose/issues/4189
     command: >
-      -n -t /var/jmeter/lineage-multi.jmx -l /var/jmeter/res.txt -J"config_file=/var/jmeter/triangle-lineage-5reads-3-10@10ops-4attr.json.txt" -Jspline_base=http://172.17.0.1:${SPLINE_REST_PORT}
+      sh -c '
+        for item in `ls /var/jmeter/tests`; do 
+          echo "Running jmeter measuring for $${item}" 
+          jmeter -n -t /var/jmeter/lineage-multi.jmx -l /var/jmeter/results/$${item}.res -J"config_file=/var/jmeter/tests/$${item}" -Jspline_base=http://172.17.0.1:${SPLINE_REST_PORT}
+        done
+      '
     volumes:
       - .:/var/jmeter
     links:
