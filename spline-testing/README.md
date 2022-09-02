@@ -2,12 +2,15 @@
 
 # Testing Spline
 
-## JMeter-based testing setup:
-Currently, it can be used as follows:
+## Docker-based testing:
+Based on `docker-compose` using internally Jmeter, one can run:
 
 ```bash
-jmeter -n -t lineage-multi.jmx -l res.txt -J"config_file=.\triangle-lineage-5reads-3-10@10ops-4attr.json.txt" -Jspline_base=http://localhost:8090/spline
+./run_jmetered_spline.py
 ```
+
+Tests are defined in `./tests` directory, results are appended to the results (created if empty) in `./results` directory next to it.
+
 
 ---
 
