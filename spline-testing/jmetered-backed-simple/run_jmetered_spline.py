@@ -2,13 +2,12 @@
 import subprocess
 import docker
 import os
-import time
-
-RUN_ARANGODB_DOCKER = "docker run -p 8529:8529 -e ARANGO_NO_AUTH=1 arangodb/arangodb:3.9.2"
 
 GIT_CLONE_SPLINE = "git clone git@github.com:AbsaOSS/spline.git"
 GIT_CHEKOUT_SPLINE_BRANCH = "git checkout {branch}"
-RUN_ARANGODB_SPLINE_INIT = "java -jar ./admin/target/admin-1.0.0-SNAPSHOT.jar db-init arangodb://localhost/spline"
+
+SPLINE_CORE_VERSION = "1.0.0-SNAPSHOT"
+CUSTOM_IMAGES = [f"testing-spline-db-admin:{SPLINE_CORE_VERSION}", f"testing-spline-rest-server:{SPLINE_CORE_VERSION}"]
 
 # or install??
 # todo alternate mvn.cmd for mvn for non-windows
@@ -55,6 +54,13 @@ def run_docker_compose():
 def cleanup_docker():
     # subprocess.run('docker-compose down'.split())
     # todo cleanup images?
+    for image_name in CUSTOM_IMAGES:
+        print(f"Cleaning up custom image '{image_name}'")
+        try:
+            client.images.remove(image_name, force=True)
+            print(" - done")
+        except docker.errors.ImageNotFound as inf:
+            print(f" - custom image custom image '{image_name}' not found!")
 
     print("docker-compose cleanup finished")
 
