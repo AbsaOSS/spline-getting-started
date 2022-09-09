@@ -3,6 +3,7 @@ import subprocess
 import docker
 import os
 import platform
+import pandas as pd
 
 GIT_CLONE_SPLINE = "git clone git@github.com:AbsaOSS/spline.git"
 GIT_CHEKOUT_SPLINE_BRANCH = "git checkout {branch}"
@@ -11,6 +12,15 @@ SPLINE_CORE_VERSION = "1.0.0-SNAPSHOT"  # needs to be in sync with .env
 CUSTOM_IMAGES = [f"testing-spline-db-admin:{SPLINE_CORE_VERSION}", f"testing-spline-rest-server:{SPLINE_CORE_VERSION}"]
 
 SPLINE_BUILD = "{mvn} install -DskipTests"
+
+JMETER_TIMESTAMP_COLNAME = "timeStamp"
+JMETER_LABEL_COLNAME = "label"
+
+# script folders:
+RESULTS_FOLDER_NAME = "results"
+REFERENCE_FOLDER_NAME = "reference"
+PROCESSED_FOLDER_NAME = "processed_results"
+GRAPHS_FOLDER_NAME = "graphs"
 
 # populated in main
 # client =
@@ -67,6 +77,41 @@ def cleanup_docker():
     print("docker-compose cleanup finished")
 
 
+def enrich_results_with_reference():
+    result_filenames = os.listdir(f"{root_dir}/{RESULTS_FOLDER_NAME}")
+    os.makedirs(f"{root_dir}/{PROCESSED_FOLDER_NAME}", exist_ok=True)
+    for result_filename in result_filenames:
+        reference_df = pd.read_csv(f"./{REFERENCE_FOLDER_NAME}/{result_filename}")
+        reference_df[JMETER_LABEL_COLNAME] = reference_df[JMETER_LABEL_COLNAME].map(lambda x: f"reference {x}")  # in-place
+        normalized_reference_df = normalize_dataframe_timestamp(reference_df)
+
+        results_df = pd.read_csv(f"./{RESULTS_FOLDER_NAME}/{result_filename}")
+        normalized_results_df = normalize_dataframe_timestamp(results_df)
+
+        joined_df = pd.concat([normalized_reference_df, normalized_results_df])
+
+        joined_df.to_csv(f"./{PROCESSED_FOLDER_NAME}/{result_filename}", index=False)
+
+
+def normalize_dataframe_timestamp(df: pd.core.frame.DataFrame) -> pd.core.frame.DataFrame:
+    min_ts = df[JMETER_TIMESTAMP_COLNAME].min()
+    normalized_df = df.copy()  # deep copy for the fn to behave immutably
+    normalized_df[JMETER_TIMESTAMP_COLNAME] = normalized_df[JMETER_TIMESTAMP_COLNAME].map(lambda x: x - min_ts)
+    return normalized_df
+
+
+def generate_graphs():
+    result_filenames = os.listdir(f"{root_dir}/{PROCESSED_FOLDER_NAME}")
+    os.makedirs(f"{root_dir}/{GRAPHS_FOLDER_NAME}", exist_ok=True)
+    for result_filename in result_filenames:
+        # TODO nicify or read from .env file?
+        NAME="jmeter"
+        JMETER_VERSION="5.4"
+        IMAGE=f"justb4/jmeter:{JMETER_VERSION}"
+        PWD=os.getcwd()
+        subprocess.run(f'docker run --rm --name {NAME} -v {PWD}:/var/jmeter -w /var/jmeter {IMAGE} -J"jmeter.reportgenerator.overall_granularity=1000" -g {PROCESSED_FOLDER_NAME}/{result_filename} -o {GRAPHS_FOLDER_NAME}/{result_filename}')
+
+
 if __name__ == '__main__':
     client = docker.from_env()
     root_dir = os.getcwd()
@@ -74,6 +119,9 @@ if __name__ == '__main__':
 
     build_spline(spine_branch)  # TODO use develop when merged?
     run_docker_compose()
+
+    enrich_results_with_reference()
+    generate_graphs()
 
     cleanup_docker()
 
