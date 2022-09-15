@@ -109,7 +109,7 @@ def generate_graphs():
         JMETER_VERSION="5.4"
         IMAGE=f"justb4/jmeter:{JMETER_VERSION}"
         PWD=os.getcwd()
-        subprocess.run(f'docker run --rm --name {NAME} -v {PWD}:/var/jmeter -w /var/jmeter {IMAGE} -J"jmeter.reportgenerator.overall_granularity=1000" -g {PROCESSED_FOLDER_NAME}/{result_filename} -o {GRAPHS_FOLDER_NAME}/{result_filename}')
+        subprocess.run(f'docker run --rm --name {NAME} -v {PWD}:/var/jmeter -w /var/jmeter {IMAGE} -J"user.properties=/var/jmeter/user.properties" -g {PROCESSED_FOLDER_NAME}/{result_filename} -o {GRAPHS_FOLDER_NAME}/{result_filename}')
 
 
 if __name__ == '__main__':

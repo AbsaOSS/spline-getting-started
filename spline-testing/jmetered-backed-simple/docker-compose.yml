@@ -72,7 +72,7 @@ services:
       sh -c '
         for item in `ls /var/jmeter/tests`; do 
           echo "Running jmeter measuring for $${item}" 
-          jmeter -n -t /var/jmeter/lineage-multi.jmx -l /var/jmeter/results/$${item}.res -J"config_file=/var/jmeter/tests/$${item}" -Jspline_base=http://172.17.0.1:${SPLINE_REST_PORT}
+          jmeter -n -t /var/jmeter/lineage-multi.jmx -l /var/jmeter/results/$${item}.res -J"user.properties=/var/jmeter/user.properties" -J"config_file=/var/jmeter/tests/$${item}" -Jspline_base=http://172.17.0.1:${SPLINE_REST_PORT}
         done
       '
     volumes:
