@@ -1,21 +1,21 @@
-timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,sentBytes,grpThreads,allThreads,URL,Latency,IdleTime,Connect
-1662044948519,114,posting lineage plan,201,,simple post group 1-1,text,true,,300,25923,1,1,http://172.17.0.1:8080/producer/execution-plans,114,0,50
-1662044948649,7,posting lineage event,201,,simple post group 1-1,,true,,210,300,1,1,http://172.17.0.1:8080/producer/execution-events,7,0,0
-1662044948663,501,posting lineage plan,201,,simple post group 1-1,text,true,,300,116909,1,1,http://172.17.0.1:8080/producer/execution-plans,501,0,0
-1662044949166,7,posting lineage event,201,,simple post group 1-1,,true,,210,300,1,1,http://172.17.0.1:8080/producer/execution-events,7,0,0
-1662044949184,1438,posting lineage plan,201,,simple post group 1-1,text,true,,300,207909,1,1,http://172.17.0.1:8080/producer/execution-plans,1438,0,0
-1662044950623,7,posting lineage event,201,,simple post group 1-1,,true,,210,300,1,1,http://172.17.0.1:8080/producer/execution-events,7,0,0
-1662044950643,2824,posting lineage plan,201,,simple post group 1-1,text,true,,300,298909,1,1,http://172.17.0.1:8080/producer/execution-plans,2823,0,0
-1662044953469,7,posting lineage event,201,,simple post group 1-1,,true,,210,300,1,1,http://172.17.0.1:8080/producer/execution-events,7,0,0
-1662044953493,4817,posting lineage plan,201,,simple post group 1-1,text,true,,300,389909,1,1,http://172.17.0.1:8080/producer/execution-plans,4817,0,0
-1662044958311,7,posting lineage event,201,,simple post group 1-1,,true,,210,300,1,1,http://172.17.0.1:8080/producer/execution-events,7,0,0
-1662044958337,7258,posting lineage plan,201,,simple post group 1-1,text,true,,300,480934,1,1,http://172.17.0.1:8080/producer/execution-plans,7258,0,0
-1662044965596,7,posting lineage event,201,,simple post group 1-1,,true,,210,300,1,1,http://172.17.0.1:8080/producer/execution-events,7,0,0
-1662044965625,10184,posting lineage plan,201,,simple post group 1-1,text,true,,300,572014,1,1,http://172.17.0.1:8080/producer/execution-plans,10184,0,0
-1662044975810,7,posting lineage event,201,,simple post group 1-1,,true,,210,300,1,1,http://172.17.0.1:8080/producer/execution-events,7,0,0
-1662044975841,13572,posting lineage plan,201,,simple post group 1-1,text,true,,300,663094,1,1,http://172.17.0.1:8080/producer/execution-plans,13572,0,0
-1662044989416,8,posting lineage event,201,,simple post group 1-1,,true,,210,300,1,1,http://172.17.0.1:8080/producer/execution-events,8,0,0
-1662044989451,18002,posting lineage plan,201,,simple post group 1-1,text,true,,300,754174,1,1,http://172.17.0.1:8080/producer/execution-plans,18002,0,0
-1662045007454,7,posting lineage event,201,,simple post group 1-1,,true,,210,300,1,1,http://172.17.0.1:8080/producer/execution-events,7,0,0
-1662045007492,25098,posting lineage plan,201,,simple post group 1-1,text,true,,300,845254,1,1,http://172.17.0.1:8080/producer/execution-plans,25097,0,0
-1662045032592,10,posting lineage event,201,,simple post group 1-1,,true,,210,300,1,1,http://172.17.0.1:8080/producer/execution-events,10,0,0
+timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,sentBytes,grpThreads,allThreads,URL,Latency,IdleTime,Connect,"graphType","operationCount","attributeCount","readCount"
+1663584757777,63,posting lineage plan,201,,simple post group 1-1,text,true,,300,26071,1,1,http://172.17.0.1:8080/producer/execution-plans,62,0,36,Triangle,3,7,5
+1663584758004,8,posting lineage event,201,,simple post group 1-1,,true,,210,300,1,1,http://172.17.0.1:8080/producer/execution-events,8,0,0,Triangle, 3, 7, 5
+1663584758020,22,posting lineage plan,201,,simple post group 1-1,text,true,,300,117013,1,1,http://172.17.0.1:8080/producer/execution-plans,22,0,0,Triangle,3,7,25
+1663584758048,10,posting lineage event,201,,simple post group 1-1,,true,,210,300,1,1,http://172.17.0.1:8080/producer/execution-events,10,0,0,Triangle, 3, 7, 25
+1663584758066,33,posting lineage plan,201,,simple post group 1-1,text,true,,300,208014,1,1,http://172.17.0.1:8080/producer/execution-plans,33,0,0,Triangle,3,7,45
+1663584758112,9,posting lineage event,201,,simple post group 1-1,,true,,210,300,1,1,http://172.17.0.1:8080/producer/execution-events,9,0,0,Triangle, 3, 7, 45
+1663584758132,48,posting lineage plan,201,,simple post group 1-1,text,true,,300,299014,1,1,http://172.17.0.1:8080/producer/execution-plans,48,0,0,Triangle,3,7,65
+1663584758194,9,posting lineage event,201,,simple post group 1-1,,true,,210,300,1,1,http://172.17.0.1:8080/producer/execution-events,9,0,0,Triangle, 3, 7, 65
+1663584758223,53,posting lineage plan,201,,simple post group 1-1,text,true,,300,390014,1,1,http://172.17.0.1:8080/producer/execution-plans,53,0,0,Triangle,3,7,85
+1663584758286,7,posting lineage event,201,,simple post group 1-1,,true,,210,300,1,1,http://172.17.0.1:8080/producer/execution-events,7,0,0,Triangle, 3, 7, 85
+1663584758309,68,posting lineage plan,201,,simple post group 1-1,text,true,,300,481039,1,1,http://172.17.0.1:8080/producer/execution-plans,68,0,0,Triangle,3,7,105
+1663584758390,6,posting lineage event,201,,simple post group 1-1,,true,,210,300,1,1,http://172.17.0.1:8080/producer/execution-events,6,0,0,Triangle, 3, 7, 105
+1663584758413,75,posting lineage plan,201,,simple post group 1-1,text,true,,300,572120,1,1,http://172.17.0.1:8080/producer/execution-plans,75,0,0,Triangle,3,7,125
+1663584758506,6,posting lineage event,201,,simple post group 1-1,,true,,210,300,1,1,http://172.17.0.1:8080/producer/execution-events,6,0,0,Triangle, 3, 7, 125
+1663584758532,69,posting lineage plan,201,,simple post group 1-1,text,true,,300,663200,1,1,http://172.17.0.1:8080/producer/execution-plans,69,0,0,Triangle,3,7,145
+1663584758613,7,posting lineage event,201,,simple post group 1-1,,true,,210,300,1,1,http://172.17.0.1:8080/producer/execution-events,7,0,0,Triangle, 3, 7, 145
+1663584758641,73,posting lineage plan,201,,simple post group 1-1,text,true,,300,754280,1,1,http://172.17.0.1:8080/producer/execution-plans,73,0,0,Triangle,3,7,165
+1663584758727,6,posting lineage event,201,,simple post group 1-1,,true,,210,300,1,1,http://172.17.0.1:8080/producer/execution-events,6,0,0,Triangle, 3, 7, 165
+1663584758759,90,posting lineage plan,201,,simple post group 1-1,text,true,,300,845360,1,1,http://172.17.0.1:8080/producer/execution-plans,89,0,0,Triangle,3,7,185
+1663584758863,7,posting lineage event,201,,simple post group 1-1,,true,,210,300,1,1,http://172.17.0.1:8080/producer/execution-events,7,0,0,Triangle, 3, 7, 185
