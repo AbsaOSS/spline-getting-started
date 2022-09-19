@@ -4,6 +4,8 @@ import docker
 import os
 import platform
 import pandas as pd
+import matplotlib.pyplot as plt
+
 
 GIT_CLONE_SPLINE = "git clone git@github.com:AbsaOSS/spline.git"
 GIT_CHEKOUT_SPLINE_BRANCH = "git checkout {branch}"
@@ -13,8 +15,14 @@ CUSTOM_IMAGES = [f"testing-spline-db-admin:{SPLINE_CORE_VERSION}", f"testing-spl
 
 SPLINE_BUILD = "{mvn} install -DskipTests"
 
-JMETER_TIMESTAMP_COLNAME = "timeStamp"
-JMETER_LABEL_COLNAME = "label"
+JMETER_COLNAME_TIMESTAMP = "timeStamp"
+JMETER_COLNAME_ELAPSED= "elapsed"
+JMETER_COLNAME_LABEL = "label"
+# coming from Jmeter, but custom-added (graphType,operationCount,attributeCount,readCount)
+JMETER_COLNAME_GRAPH_TYPE = "graphType"
+JMETER_COLNAME_OP_COUNT = "operationCount"
+JMETER_COLNAME_ATTR_COUNT = "attributeCount"
+JMETER_COLNAME_READ_COUNT = "readCount"
 
 # script folders:
 RESULTS_FOLDER_NAME = "results"
@@ -82,7 +90,7 @@ def enrich_results_with_reference():
     os.makedirs(f"{root_dir}/{PROCESSED_FOLDER_NAME}", exist_ok=True)
     for result_filename in result_filenames:
         reference_df = pd.read_csv(f"./{REFERENCE_FOLDER_NAME}/{result_filename}")
-        reference_df[JMETER_LABEL_COLNAME] = reference_df[JMETER_LABEL_COLNAME].map(lambda x: f"reference {x}")  # in-place
+        reference_df[JMETER_COLNAME_LABEL] = reference_df[JMETER_COLNAME_LABEL].map(lambda x: f"reference {x}")  # in-place
         normalized_reference_df = normalize_dataframe_timestamp(reference_df)
 
         results_df = pd.read_csv(f"./{RESULTS_FOLDER_NAME}/{result_filename}")
@@ -94,22 +102,90 @@ def enrich_results_with_reference():
 
 
 def normalize_dataframe_timestamp(df: pd.core.frame.DataFrame) -> pd.core.frame.DataFrame:
-    min_ts = df[JMETER_TIMESTAMP_COLNAME].min()
+    min_ts = df[JMETER_COLNAME_TIMESTAMP].min()
     normalized_df = df.copy()  # deep copy for the fn to behave immutably
-    normalized_df[JMETER_TIMESTAMP_COLNAME] = normalized_df[JMETER_TIMESTAMP_COLNAME].map(lambda x: x - min_ts)
+    normalized_df[JMETER_COLNAME_TIMESTAMP] = normalized_df[JMETER_COLNAME_TIMESTAMP].map(lambda x: x - min_ts)
     return normalized_df
+
+
+def divide_df_ref_and_non_ref(df: pd.core.frame.DataFrame) -> list[pd.core.frame.DataFrame]:
+    ref_df = df[df['label'].str.startswith("reference")]
+    nonref_df = df[~df['label'].str.startswith("reference")]
+
+    return [ref_df, nonref_df]
+
+
+def divide_plan_and_event(df: pd.core.frame.DataFrame) -> list[pd.core.frame.DataFrame]:
+    plan_df = df[df['label'].str.endswith("plan")]
+    non_plan_df = df[~df['label'].str.endswith("plan")]
+
+    return [plan_df, non_plan_df]
+
+
+def find_variable_column_name(df: pd.core.frame.DataFrame) -> str:
+    unique_ops, unique_attrs, unique_reads = df[[JMETER_COLNAME_OP_COUNT, JMETER_COLNAME_ATTR_COUNT, JMETER_COLNAME_READ_COUNT]].nunique().values.tolist()
+    # debug print(f"uniques: {unique_ops}, {unique_attrs}, {unique_reads}")
+
+    if unique_ops > 1:
+        print(f"  Using variable column '{JMETER_COLNAME_OP_COUNT}' (nuniques = {unique_ops})")
+        return JMETER_COLNAME_OP_COUNT
+    elif unique_attrs > 1:
+        print(f"  Using variable column '{JMETER_COLNAME_ATTR_COUNT}' (nuniques = {unique_attrs})")
+        return JMETER_COLNAME_ATTR_COUNT
+    elif unique_reads > 1:
+        print(f"  Using variable column '{JMETER_COLNAME_READ_COUNT}' (nuniques = {unique_reads})")
+        return JMETER_COLNAME_READ_COUNT
+    else:
+        print(f"  Fall-backing variable column to '{JMETER_COLNAME_TIMESTAMP}'")
+        return JMETER_COLNAME_OP_COUNT
+
+
+def generate_graph_from_processed_result(result_filename: str):
+
+    # rereading the results file, because we want the graph drawing process to be independent from the processing part
+    all_data = pd.read_csv(f"./{PROCESSED_FOLDER_NAME}/{result_filename}")
+    ref_df, res_df = divide_df_ref_and_non_ref(all_data)
+
+    ref_plan_df, ref_event_df = divide_plan_and_event(ref_df)
+    res_plan_df, res_event_df = divide_plan_and_event(res_df)
+
+    var_colname = find_variable_column_name(all_data)  # operationCount,attributeCount,readCount or (worst-case) timeStamp
+
+    plt.clf() # clear previous state if any
+    plt.yscale("log")  # because initial values tend to be outliers
+
+    ref_plan_elapsed = ref_plan_df[JMETER_COLNAME_ELAPSED].tolist()
+    ref_plan_var = ref_plan_df[var_colname].tolist()
+    plt.plot(ref_plan_var, ref_plan_elapsed, label="reference lineage plan posting")
+
+    res_plan_elapsed = res_plan_df[JMETER_COLNAME_ELAPSED].tolist()
+    res_plan_var = res_plan_df[var_colname].tolist()
+    plt.plot(res_plan_var, res_plan_elapsed, label="current lineage plan posting")
+
+    ref_event_elapsed = ref_event_df[JMETER_COLNAME_ELAPSED].tolist()
+    ref_event_var = ref_event_df[var_colname].tolist()
+    plt.plot(ref_event_var, ref_event_elapsed, label="reference lineage event posting")
+
+    res_event_elapsed = res_event_df[JMETER_COLNAME_ELAPSED].tolist()
+    res_event_var = res_event_df[var_colname].tolist()
+    plt.plot(res_event_var, res_event_elapsed, label="current lineage event posting")
+
+    plt.xlabel(f"Variable '{var_colname}'")
+    plt.ylabel('Elapsed time')
+    plt.title(f"Elapsed time dependence on variable '{var_colname}'")
+    plt.legend()
+    
+    plt.savefig(f"{root_dir}/{GRAPHS_FOLDER_NAME}/{result_filename}.png", dpi=300)
 
 
 def generate_graphs():
     result_filenames = os.listdir(f"{root_dir}/{PROCESSED_FOLDER_NAME}")
     os.makedirs(f"{root_dir}/{GRAPHS_FOLDER_NAME}", exist_ok=True)
+
+    # rereading the results file, because we want the graph drawing process to be independent from the processing part
     for result_filename in result_filenames:
-        # TODO nicify or read from .env file?
-        NAME="jmeter"
-        JMETER_VERSION="5.4"
-        IMAGE=f"justb4/jmeter:{JMETER_VERSION}"
-        PWD=os.getcwd()
-        subprocess.run(f'docker run --rm --name {NAME} -v {PWD}:/var/jmeter -w /var/jmeter {IMAGE} -J"user.properties=/var/jmeter/user.properties" -g {PROCESSED_FOLDER_NAME}/{result_filename} -o {GRAPHS_FOLDER_NAME}/{result_filename}')
+        print(f"Generating graph for file {PROCESSED_FOLDER_NAME}/{result_filename}")
+        generate_graph_from_processed_result(result_filename)
 
 
 if __name__ == '__main__':
