@@ -68,11 +68,12 @@ services:
     network_mode: "bridge"
     entrypoint: busybox
     # escaping like $${item} is needed, just '$item' would be replaced by docker-compose. https://github.com/docker/compose/issues/4189
+    # -J"user.properties=/var/jmeter/user.properties" with sample_variables being set does not seem to work, so it is set explicitly below
     command: >
       sh -c '
         for item in `ls /var/jmeter/tests`; do 
-          echo "Running jmeter measuring for $${item}" 
-          jmeter -n -t /var/jmeter/lineage-multi.jmx -l /var/jmeter/results/$${item}.res -J"user.properties=/var/jmeter/user.properties" -J"config_file=/var/jmeter/tests/$${item}" -Jspline_base=http://172.17.0.1:${SPLINE_REST_PORT}
+          echo "Running jmeter measuring for $${item}"
+          jmeter -n -t /var/jmeter/lineage-multi.jmx -l /var/jmeter/results/$${item}.res -Jsample_variables=graphType,operationCount,attributeCount,readCount -J"config_file=/var/jmeter/tests/$${item}" -Jspline_base=http://172.17.0.1:${SPLINE_REST_PORT}
         done
       '
     volumes:

@@ -66,6 +66,8 @@
             <bytes>true</bytes>
             <sentBytes>true</sentBytes>
             <url>true</url>
+            <fileName>true</fileName>
+            <hostname>true</hostname>
             <threadCounts>true</threadCounts>
             <idleTime>true</idleTime>
             <connectTime>true</connectTime>
@@ -103,6 +105,24 @@
             <boolProp name="stopThread">true</boolProp>
             <stringProp name="variableNames">config_line</stringProp>
           </CSVDataSet>
+          <hashTree/>
+          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="extractor for graphType; operationCount; attributeCount; readCount" enabled="true">
+            <stringProp name="JSONPostProcessor.referenceNames">graphType; operationCount; attributeCount; readCount</stringProp>
+            <stringProp name="JSONPostProcessor.jsonPathExprs">extraInfo.graph-type; extraInfo.operationCount; extraInfo.attributeCount; extraInfo.readCount</stringProp>
+            <stringProp name="JSONPostProcessor.match_numbers">1</stringProp>
+            <stringProp name="Sample.scope">variable</stringProp>
+            <stringProp name="Scope.variable">config_line</stringProp>
+            <stringProp name="JSONPostProcessor.defaultValues">${graphType}; ${operationCount}; ${attributeCount}; ${readCount}</stringProp>
+          </JSONPostProcessor>
+          <hashTree/>
+          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="extractor for graphType" enabled="false">
+            <stringProp name="JSONPostProcessor.referenceNames">graphType</stringProp>
+            <stringProp name="JSONPostProcessor.jsonPathExprs">extraInfo.graph-type</stringProp>
+            <stringProp name="JSONPostProcessor.match_numbers">1</stringProp>
+            <stringProp name="Sample.scope">variable</stringProp>
+            <stringProp name="Scope.variable">config_line</stringProp>
+            <stringProp name="JSONPostProcessor.defaultValues">&quot;&quot;</stringProp>
+          </JSONPostProcessor>
           <hashTree/>
           <IfController guiclass="IfControllerPanel" testclass="IfController" testname="if current config_line represents a lineage plan" enabled="true">
             <stringProp name="IfController.condition">${__groovy(vars.get(&quot;config_line&quot;).substring(0\,1) == &quot;{&quot; )}</stringProp>
@@ -146,10 +166,46 @@
                     <stringProp name="Header.name">Content-Type</stringProp>
                     <stringProp name="Header.value">${contentType}</stringProp>
                   </elementProp>
+                  <elementProp name="" elementType="Header">
+                    <stringProp name="Header.name">X-absa-graphType</stringProp>
+                    <stringProp name="Header.value">${graphType}</stringProp>
+                  </elementProp>
+                  <elementProp name="" elementType="Header">
+                    <stringProp name="Header.name">X-absa-readCount</stringProp>
+                    <stringProp name="Header.value">${readCount}</stringProp>
+                  </elementProp>
+                  <elementProp name="" elementType="Header">
+                    <stringProp name="Header.name">X-absa-operationCount</stringProp>
+                    <stringProp name="Header.value">${operationCount}</stringProp>
+                  </elementProp>
+                  <elementProp name="" elementType="Header">
+                    <stringProp name="Header.name">X-absa-attributeCount</stringProp>
+                    <stringProp name="Header.value">${attributeCount}</stringProp>
+                  </elementProp>
                 </collectionProp>
               </HeaderManager>
               <hashTree/>
             </hashTree>
+            <DebugSampler guiclass="TestBeanGUI" testclass="DebugSampler" testname="Debug Sampler" enabled="false">
+              <boolProp name="displayJMeterProperties">false</boolProp>
+              <boolProp name="displayJMeterVariables">true</boolProp>
+              <boolProp name="displaySystemProperties">false</boolProp>
+            </DebugSampler>
+            <hashTree/>
+            <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="debug log info" enabled="true">
+              <stringProp name="cacheKey">true</stringProp>
+              <stringProp name="filename"></stringProp>
+              <stringProp name="parameters"></stringProp>
+              <stringProp name="script">log.info(&quot;**** graphType = &quot; + vars.get(&quot;graphType&quot;))
+log.info(&quot;**** operationCount = &quot; + vars.get(&quot;operationCount&quot;))
+log.info(&quot;**** attributeCount = &quot; + vars.get(&quot;attributeCount&quot;))
+log.info(&quot;**** readCount = &quot; + vars.get(&quot;readCount&quot;))
+
+log.info(&quot;**** sample_variables = &quot; + vars.get(&quot;sample_variables&quot;))
+log.info(&quot;**** user.properties = &quot; + vars.get(&quot;user.properties&quot;))</stringProp>
+              <stringProp name="scriptLanguage">groovy</stringProp>
+            </JSR223PostProcessor>
+            <hashTree/>
           </hashTree>
           <IfController guiclass="IfControllerPanel" testclass="IfController" testname="if current config_line represents a lineage event" enabled="true">
             <stringProp name="IfController.condition">${__groovy(vars.get(&quot;config_line&quot;).substring(0\,1) == &quot;[&quot; )}</stringProp>
@@ -197,6 +253,26 @@
               </HeaderManager>
               <hashTree/>
             </hashTree>
+            <DebugSampler guiclass="TestBeanGUI" testclass="DebugSampler" testname="Debug Sampler" enabled="false">
+              <boolProp name="displayJMeterProperties">false</boolProp>
+              <boolProp name="displayJMeterVariables">true</boolProp>
+              <boolProp name="displaySystemProperties">false</boolProp>
+            </DebugSampler>
+            <hashTree/>
+            <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="debug log info" enabled="true">
+              <stringProp name="cacheKey">true</stringProp>
+              <stringProp name="filename"></stringProp>
+              <stringProp name="parameters"></stringProp>
+              <stringProp name="script">log.info(&quot;**** graphType = &quot; + vars.get(&quot;graphType&quot;))
+log.info(&quot;**** operationCount = &quot; + vars.get(&quot;operationCount&quot;))
+log.info(&quot;**** attributeCount = &quot; + vars.get(&quot;attributeCount&quot;))
+log.info(&quot;**** readCount = &quot; + vars.get(&quot;readCount&quot;))
+
+log.info(&quot;**** sample_variables = &quot; + vars.get(&quot;sample_variables&quot;))
+log.info(&quot;**** user.properties = &quot; + vars.get(&quot;user.properties&quot;))</stringProp>
+              <stringProp name="scriptLanguage">groovy</stringProp>
+            </JSR223PostProcessor>
+            <hashTree/>
           </hashTree>
         </hashTree>
       </hashTree>
