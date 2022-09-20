@@ -171,7 +171,7 @@ def generate_graph_from_processed_result(result_filename: str):
     plt.plot(res_event_var, res_event_elapsed, label="current lineage event posting")
 
     plt.xlabel(f"Variable '{var_colname}'")
-    plt.ylabel('Elapsed time')
+    plt.ylabel('Elapsed time [ms]')
     plt.title(f"Elapsed time dependence on variable '{var_colname}'")
     plt.legend()
     
