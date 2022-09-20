@@ -30,6 +30,11 @@ REFERENCE_FOLDER_NAME = "reference"
 PROCESSED_FOLDER_NAME = "processed_results"
 GRAPHS_FOLDER_NAME = "graphs"
 
+# Matplotlib:
+PLOT_MARKER = "o"
+PLOT_MARKER_SIZE = 2
+
+
 # populated in main
 # client =
 # root_dir =
@@ -137,7 +142,7 @@ def find_variable_column_name(df: pd.core.frame.DataFrame) -> str:
         return JMETER_COLNAME_READ_COUNT
     else:
         print(f"  Fall-backing variable column to '{JMETER_COLNAME_TIMESTAMP}'")
-        return JMETER_COLNAME_OP_COUNT
+        return JMETER_COLNAME_TIMESTAMP
 
 
 def generate_graph_from_processed_result(result_filename: str):
@@ -156,24 +161,30 @@ def generate_graph_from_processed_result(result_filename: str):
 
     ref_plan_elapsed = ref_plan_df[JMETER_COLNAME_ELAPSED].tolist()
     ref_plan_var = ref_plan_df[var_colname].tolist()
-    plt.plot(ref_plan_var, ref_plan_elapsed, label="reference lineage plan posting")
+    plt.plot(ref_plan_var, ref_plan_elapsed, marker=PLOT_MARKER, markersize=PLOT_MARKER_SIZE, label="reference lineage plan posting")
 
     res_plan_elapsed = res_plan_df[JMETER_COLNAME_ELAPSED].tolist()
     res_plan_var = res_plan_df[var_colname].tolist()
-    plt.plot(res_plan_var, res_plan_elapsed, label="current lineage plan posting")
+    plt.plot(res_plan_var, res_plan_elapsed, marker=PLOT_MARKER, markersize=PLOT_MARKER_SIZE, label="current lineage plan posting")
 
     ref_event_elapsed = ref_event_df[JMETER_COLNAME_ELAPSED].tolist()
     ref_event_var = ref_event_df[var_colname].tolist()
-    plt.plot(ref_event_var, ref_event_elapsed, label="reference lineage event posting")
+    plt.plot(ref_event_var, ref_event_elapsed, marker=PLOT_MARKER, markersize=PLOT_MARKER_SIZE, label="reference lineage event posting")
 
     res_event_elapsed = res_event_df[JMETER_COLNAME_ELAPSED].tolist()
     res_event_var = res_event_df[var_colname].tolist()
-    plt.plot(res_event_var, res_event_elapsed, label="current lineage event posting")
+    plt.plot(res_event_var, res_event_elapsed, marker=PLOT_MARKER, markersize = PLOT_MARKER_SIZE, label="current lineage event posting")
 
     plt.xlabel(f"Variable '{var_colname}'")
     plt.ylabel('Elapsed time [ms]')
     plt.title(f"Elapsed time dependence on variable '{var_colname}'")
     plt.legend()
+
+    # debug:
+    # print(f"ref_plan_var={ref_plan_var}")
+    # print(f"res_plan_var={res_plan_var}")
+    # print(f"ref_event_var={ref_event_var}")
+    # print(f"res_event_var={res_event_var}")
     
     plt.savefig(f"{root_dir}/{GRAPHS_FOLDER_NAME}/{result_filename}.png", dpi=300)
 
@@ -193,10 +204,10 @@ if __name__ == '__main__':
     root_dir = os.getcwd()
     spline_branch = "feature/adding-curl-rest-gw-docker"
 
-    build_spline(spline_branch)  # TODO use develop when merged?
-    run_docker_compose()
+    #build_spline(spline_branch)  # TODO use develop when merged?
+    #run_docker_compose()
 
-    enrich_results_with_reference()
+    #enrich_results_with_reference()
     generate_graphs()
 
     cleanup_docker()
