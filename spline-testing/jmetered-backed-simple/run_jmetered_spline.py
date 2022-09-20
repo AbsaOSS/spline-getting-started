@@ -73,6 +73,7 @@ def build_spline(branch: str = "develop"):
 
 def run_docker_compose():
     os.chdir(root_dir)
+    os.makedirs(f"{root_dir}/{RESULTS_FOLDER_NAME}", exist_ok=True)
     # --exit-code-from = reports exit code from this container
     # AND implies '--abort-on-container-exit' - will 'docker-compose down' after any container has exited
     subprocess.run("docker-compose up --exit-code-from jmeter")
@@ -203,12 +204,11 @@ def generate_graphs():
 if __name__ == '__main__':
     client = docker.from_env()
     root_dir = os.getcwd()
-    spline_branch = "feature/adding-curl-rest-gw-docker"
 
-    #build_spline(spline_branch)  # TODO use develop when merged?
-    #run_docker_compose()
+    build_spline()  # develop branch by default, supply a different branch if needed
+    run_docker_compose()
 
-    #enrich_results_with_reference()
+    enrich_results_with_reference()
     generate_graphs()
 
     cleanup_docker()

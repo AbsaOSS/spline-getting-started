@@ -1,5 +1,5 @@
 ---
-version: '3'
+version: '3.8'
 services:
   arangodb:
     image: arangodb:${ARANGO_DB_VERSION}
@@ -12,7 +12,8 @@ services:
 
   spline:
     build:
-      context: ./spline/rest-gateway
+      context: .
+      dockerfile: ./spline-rest-gateway-with-curl/Dockerfile
       args:
         PROJECT_BUILD_FINAL_NAME: spline-rest-server-${SPLINE_CORE_VERSION}
     image: testing-spline-rest-server:${SPLINE_CORE_VERSION} # locally built and used

@@ -2,6 +2,6 @@
 .DS_Store
 
 /spline-testing/jmetered-backed-simple/spline/
-/spline-testing/jmetered-backed-simple/results/*
+/spline-testing/jmetered-backed-simple/results/
 /spline-testing/jmetered-backed-simple/processed_results/
 /spline-testing/jmetered-backed-simple/graphs/
