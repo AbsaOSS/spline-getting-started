@@ -33,6 +33,7 @@ GRAPHS_FOLDER_NAME = "graphs"
 # Matplotlib:
 PLOT_MARKER = "o"
 PLOT_MARKER_SIZE = 2
+PLOT_DPI = 300
 
 
 # populated in main
@@ -161,19 +162,19 @@ def generate_graph_from_processed_result(result_filename: str):
 
     ref_plan_elapsed = ref_plan_df[JMETER_COLNAME_ELAPSED].tolist()
     ref_plan_var = ref_plan_df[var_colname].tolist()
-    plt.plot(ref_plan_var, ref_plan_elapsed, marker=PLOT_MARKER, markersize=PLOT_MARKER_SIZE, label="reference lineage plan posting")
+    plt.plot(ref_plan_var, ref_plan_elapsed, marker=PLOT_MARKER, markersize=PLOT_MARKER_SIZE, label="Reference lineage plan posting")
 
     res_plan_elapsed = res_plan_df[JMETER_COLNAME_ELAPSED].tolist()
     res_plan_var = res_plan_df[var_colname].tolist()
-    plt.plot(res_plan_var, res_plan_elapsed, marker=PLOT_MARKER, markersize=PLOT_MARKER_SIZE, label="current lineage plan posting")
+    plt.plot(res_plan_var, res_plan_elapsed, marker=PLOT_MARKER, markersize=PLOT_MARKER_SIZE, label="Current lineage plan posting")
 
     ref_event_elapsed = ref_event_df[JMETER_COLNAME_ELAPSED].tolist()
     ref_event_var = ref_event_df[var_colname].tolist()
-    plt.plot(ref_event_var, ref_event_elapsed, marker=PLOT_MARKER, markersize=PLOT_MARKER_SIZE, label="reference lineage event posting")
+    plt.plot(ref_event_var, ref_event_elapsed, marker=PLOT_MARKER, markersize=PLOT_MARKER_SIZE, label="Reference lineage event posting")
 
     res_event_elapsed = res_event_df[JMETER_COLNAME_ELAPSED].tolist()
     res_event_var = res_event_df[var_colname].tolist()
-    plt.plot(res_event_var, res_event_elapsed, marker=PLOT_MARKER, markersize = PLOT_MARKER_SIZE, label="current lineage event posting")
+    plt.plot(res_event_var, res_event_elapsed, marker=PLOT_MARKER, markersize=PLOT_MARKER_SIZE, label="Current lineage event posting")
 
     plt.xlabel(f"Variable '{var_colname}'")
     plt.ylabel('Elapsed time [ms]')
@@ -186,7 +187,7 @@ def generate_graph_from_processed_result(result_filename: str):
     # print(f"ref_event_var={ref_event_var}")
     # print(f"res_event_var={res_event_var}")
     
-    plt.savefig(f"{root_dir}/{GRAPHS_FOLDER_NAME}/{result_filename}.png", dpi=300)
+    plt.savefig(f"{root_dir}/{GRAPHS_FOLDER_NAME}/{result_filename}.png", dpi=PLOT_DPI)
 
 
 def generate_graphs():
