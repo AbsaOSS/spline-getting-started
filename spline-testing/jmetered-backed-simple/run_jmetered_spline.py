@@ -191,9 +191,9 @@ def generate_graphs():
 if __name__ == '__main__':
     client = docker.from_env()
     root_dir = os.getcwd()
-    spine_branch = "feature/adding-curl-rest-gw-docker"
+    spline_branch = "feature/adding-curl-rest-gw-docker"
 
-    build_spline(spine_branch)  # TODO use develop when merged?
+    build_spline(spline_branch)  # TODO use develop when merged?
     run_docker_compose()
 
     enrich_results_with_reference()
