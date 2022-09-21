@@ -12,8 +12,7 @@ services:
 
   spline:
     build:
-      context: .
-      dockerfile: ./spline-rest-gateway-with-curl/Dockerfile
+      context: ./spline/rest-gateway
       args:
         PROJECT_BUILD_FINAL_NAME: spline-rest-server-${SPLINE_CORE_VERSION}
     image: testing-spline-rest-server:${SPLINE_CORE_VERSION} # locally built and used
@@ -23,15 +22,12 @@ services:
     network_mode: "bridge"
     command: >
       bash -c "
-        until curl --output /dev/null --silent --get --fail http://172.17.0.1:${ARANGO_DB_PORT}/_db/spline/_admin/server/availability
-        do
-          echo waiting for 'spline' database to be ready at 172.17.0.1:${ARANGO_DB_PORT}
-          sleep 5
-        done
         catalina.sh run
       "
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://172.17.0.1:${SPLINE_REST_PORT}"]
+      # avoiding using not present curl; for explanation, see
+      # https://medium.com/bash-tips-and-tricks/part01-tcp-udp-request-with-a-native-bash-feature-and-without-curl-wget-9dcef59c30aa
+      test: timeout 10s bash -c ':> /dev/tcp/172.17.0.1/${SPLINE_REST_PORT}'
       interval: 10s
       timeout: 20s
       retries: 20
@@ -41,6 +37,9 @@ services:
       CATALINA_OPTS: "-Dsecurerandom.source=file:/dev/./urandom -Djava.security.egd=file:/dev/./urandom"
     links:
       - arangodb
+    depends_on:
+      spline-init-db:
+        condition: service_healthy
 
   spline-init-db:
     build:
@@ -61,6 +60,12 @@ services:
         bash ./entrypoint.sh db-init arangodb://172.17.0.1:${ARANGO_DB_PORT}/spline -s && sleep infinity
       "
     # ^ Waiting for jmeter image to finish first with measurements, teardown only after that
+    healthcheck:
+      # health ok = spline DB exists (init successfully done)
+      test: curl --output /dev/null --silent --get --fail http://172.17.0.1:${ARANGO_DB_PORT}/_db/spline/_admin/server/availability
+      interval: 10s
+      timeout: 20s
+      retries: 20
     links:
       - arangodb
 
@@ -72,6 +77,8 @@ services:
     # -J"user.properties=/var/jmeter/user.properties" with sample_variables being set does not seem to work, so it is set explicitly below
     command: >
       sh -c '
+        echo "Purging any previous result if present in 'results' dir"
+        rm -rf /var/jmeter/results/*
         for item in `ls /var/jmeter/tests`; do 
           echo "Running jmeter measuring for $${item}"
           jmeter -n -t /var/jmeter/lineage-multi.jmx -l /var/jmeter/results/$${item}.res -Jsample_variables=graphType,operationCount,attributeCount,readCount -J"config_file=/var/jmeter/tests/$${item}" -Jspline_base=http://172.17.0.1:${SPLINE_REST_PORT}
