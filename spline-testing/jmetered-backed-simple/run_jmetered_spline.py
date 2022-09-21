@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import argparse
 import subprocess
 import docker
 import os
@@ -6,9 +7,9 @@ import platform
 import pandas as pd
 import matplotlib.pyplot as plt
 
-
 GIT_CLONE_SPLINE = "git clone git@github.com:AbsaOSS/spline.git"
 GIT_CHEKOUT_SPLINE_BRANCH = "git checkout {branch}"
+SPLINE_DEFAULT_BRANCH = "develop"
 
 SPLINE_CORE_VERSION = "1.0.0-SNAPSHOT"  # needs to be in sync with .env
 CUSTOM_IMAGES = [f"testing-spline-db-admin:{SPLINE_CORE_VERSION}", f"testing-spline-rest-server:{SPLINE_CORE_VERSION}"]
@@ -36,10 +37,22 @@ PLOT_MARKER_SIZE = 2
 PLOT_DPI = 300
 
 
-# populated in main
-# client =
-# root_dir =
-# mvn =
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        prog='run_jmetered_spline',
+        description='Spline backend simple testing (jmetered)',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter  # prints default values, too, on help (-h)
+    )
+
+    parser.add_argument('-n', '--no-rebuild', action='store_true', dest="no_rebuild", default=False,
+                        help="if specified, spline will not be rebuilt (use when rerunning on an existing codebase)")
+    # parser.add_argument('-v', '--verbose', action="store_true", default=False,
+    #                     help="prints extra information while running.")
+
+    parser.add_argument('-b', '--spline-branch', dest="spline_branch", default=SPLINE_DEFAULT_BRANCH,
+                        help="Name of spline branch to test")
+
+    return parser.parse_args()
 
 
 def get_mvn_by_os() -> str:
@@ -49,7 +62,7 @@ def get_mvn_by_os() -> str:
         return "mvn"
 
 
-def build_spline(branch: str = "develop"):
+def build_spline(branch):
     print(f"Getting spline (via: '{GIT_CLONE_SPLINE}')")
     subprocess.run(GIT_CLONE_SPLINE)
 
@@ -81,6 +94,8 @@ def run_docker_compose():
 
 
 def cleanup_docker():
+    client = docker.from_env()
+
     for image_name in CUSTOM_IMAGES:
         print(f"Cleaning up custom image '{image_name}'")
         try:
@@ -201,11 +216,13 @@ def generate_graphs():
         generate_graph_from_processed_result(result_filename)
 
 
-if __name__ == '__main__':
-    client = docker.from_env()
-    root_dir = os.getcwd()
+def run(parsed_args: argparse.Namespace):
+    spline_branch = parsed_args.spline_branch
+    no_rebuild = parsed_args.no_rebuild
 
-    build_spline()  # develop branch by default, supply a different branch if needed
+    if not no_rebuild:
+        build_spline(spline_branch)
+
     run_docker_compose()
 
     enrich_results_with_reference()
@@ -213,5 +230,13 @@ if __name__ == '__main__':
 
     cleanup_docker()
 
-    print("ALL DONE")
+    print("All testing done.")
 
+
+if __name__ == '__main__':
+    args = parse_args()
+
+    # globals script vars
+    root_dir = os.getcwd()
+
+    run(args)
