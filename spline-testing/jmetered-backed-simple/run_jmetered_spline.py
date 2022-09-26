@@ -3,6 +3,7 @@ import argparse
 import subprocess
 import docker
 import os
+import sys
 import platform
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -74,7 +75,7 @@ def build_spline(branch):
     mvn = get_mvn_by_os()
     spline_build_command = SPLINE_BUILD.format(mvn=mvn)
     print(f"Building spline via '{spline_build_command}'")
-    completed_build = subprocess.run(spline_build_command)
+    completed_build = subprocess.run(spline_build_command, shell=True)
     if completed_build.returncode != 0:
         print(f"Spline build failed with error code {completed_build.returncode}", file=sys.stderr)
         exit(2)
@@ -87,7 +88,7 @@ def run_docker_compose():
     os.makedirs(f"{root_dir}/{RESULTS_FOLDER_NAME}", exist_ok=True)
     # --exit-code-from = reports exit code from this container
     # AND implies '--abort-on-container-exit' - will 'docker-compose down' after any container has exited
-    subprocess.run("docker-compose up --exit-code-from jmeter")
+    subprocess.run("docker-compose up --exit-code-from jmeter", shell=True)
     print("docker-compose up done")
 
 
