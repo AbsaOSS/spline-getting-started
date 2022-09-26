@@ -3,13 +3,12 @@ import argparse
 import subprocess
 import docker
 import os
-import sys
 import platform
 import pandas as pd
 import matplotlib.pyplot as plt
+import git
 
-GIT_CLONE_SPLINE = "git clone https://github.com/AbsaOSS/spline.git"
-GIT_CHEKOUT_SPLINE_BRANCH = "git checkout {branch}"
+GIT_SPLINE_URL = "https://github.com/AbsaOSS/spline.git"
 SPLINE_DEFAULT_BRANCH = "develop"
 
 SPLINE_CORE_VERSION = "1.0.0-SNAPSHOT"  # needs to be in sync with .env
@@ -18,7 +17,7 @@ CUSTOM_IMAGES = [f"testing-spline-db-admin:{SPLINE_CORE_VERSION}", f"testing-spl
 SPLINE_BUILD = "{mvn} install -DskipTests"
 
 JMETER_COLNAME_TIMESTAMP = "timeStamp"
-JMETER_COLNAME_ELAPSED= "elapsed"
+JMETER_COLNAME_ELAPSED = "elapsed"
 JMETER_COLNAME_LABEL = "label"
 # coming from Jmeter, but custom-added (graphType,operationCount,attributeCount,readCount)
 JMETER_COLNAME_GRAPH_TYPE = "graphType"
@@ -64,21 +63,13 @@ def get_mvn_by_os() -> str:
 
 
 def build_spline(branch):
-    print(f"Getting spline (via: '{GIT_CLONE_SPLINE}')")
-    subprocess.run(GIT_CLONE_SPLINE)
+    spline_dir = f"{root_dir}/spline"
 
-    print(f"Current working directory: {os.getcwd()}")
-    print("Changing current working directory...")
+    print(f"Cloning Spline into {spline_dir} (branch {branch})")
+    git.Repo.clone_from(GIT_SPLINE_URL, spline_dir, branch=branch)
+
     os.chdir(f"{root_dir}/spline")
     print(f"Current working directory: {os.getcwd()}")
-
-
-    checkout_spline_command = GIT_CHEKOUT_SPLINE_BRANCH.format(branch=branch)
-    print(f"Checking out spline codebase - branch {branch} (via: '{checkout_spline_command}')")
-    completed_checkout = subprocess.run(checkout_spline_command)
-    if completed_checkout.returncode != 0:
-        print(f"Spline checkout failed with error code {completed_checkout.returncode}", file=sys.stderr)
-        exit(1)
 
     mvn = get_mvn_by_os()
     spline_build_command = SPLINE_BUILD.format(mvn=mvn)
