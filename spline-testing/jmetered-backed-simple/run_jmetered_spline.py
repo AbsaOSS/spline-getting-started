@@ -7,7 +7,7 @@ import platform
 import pandas as pd
 import matplotlib.pyplot as plt
 
-GIT_CLONE_SPLINE = "git clone git@github.com:AbsaOSS/spline.git"
+GIT_CLONE_SPLINE = "git clone https://github.com/AbsaOSS/spline.git"
 GIT_CHEKOUT_SPLINE_BRANCH = "git checkout {branch}"
 SPLINE_DEFAULT_BRANCH = "develop"
 
