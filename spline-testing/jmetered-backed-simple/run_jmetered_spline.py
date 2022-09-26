@@ -3,6 +3,7 @@ import argparse
 import subprocess
 import docker
 import os
+import sys
 import platform
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -74,14 +75,20 @@ def build_spline(branch):
 
     checkout_spline_command = GIT_CHEKOUT_SPLINE_BRANCH.format(branch=branch)
     print(f"Checking out spline codebase - branch {branch} (via: '{checkout_spline_command}')")
-    subprocess.run(checkout_spline_command)
+    completed_checkout = subprocess.run(checkout_spline_command)
+    if completed_checkout.returncode != 0:
+        print(f"Spline checkout failed with error code {completed_checkout.returncode}", file=sys.stderr)
+        exit(1)
 
     mvn = get_mvn_by_os()
     spline_build_command = SPLINE_BUILD.format(mvn=mvn)
     print(f"Building spline via '{spline_build_command}'")
-    subprocess.run(spline_build_command)
-
-    print("Spline build complete.")
+    completed_build = subprocess.run(spline_build_command)
+    if completed_build.returncode != 0:
+        print(f"Spline build failed with error code {completed_build.returncode}", file=sys.stderr)
+        exit(2)
+    else:
+        print("Spline build complete.")
 
 
 def run_docker_compose():
