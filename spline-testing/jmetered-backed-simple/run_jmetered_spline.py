@@ -66,8 +66,13 @@ def get_mvn_by_os() -> str:
 def build_spline(branch):
     spline_dir = f"{root_dir}/spline"
 
-    print(f"Cloning Spline into {spline_dir} (branch {branch})")
-    git.Repo.clone_from(GIT_SPLINE_URL, spline_dir, branch=branch)
+    if not os.path.exists(spline_dir):
+        print(f"Cloning Spline into {spline_dir} (branch {branch})")
+        git.Repo.clone_from(GIT_SPLINE_URL, spline_dir, branch=branch)
+    else:
+        print(f"Pulling Spline into {spline_dir} (branch {branch})")
+        repo = git.Repo(spline_dir)
+        repo.remotes[0].pull()
 
     os.chdir(f"{root_dir}/spline")
     print(f"Current working directory: {os.getcwd()}")
@@ -75,12 +80,7 @@ def build_spline(branch):
     mvn = get_mvn_by_os()
     spline_build_command = SPLINE_BUILD.format(mvn=mvn)
     print(f"Building spline via '{spline_build_command}'")
-    completed_build = subprocess.run(spline_build_command, shell=True)
-    if completed_build.returncode != 0:
-        print(f"Spline build failed with error code {completed_build.returncode}", file=sys.stderr)
-        exit(2)
-    else:
-        print("Spline build complete.")
+    subprocess.run(spline_build_command, shell=True, check=True)
 
 
 def run_docker_compose():
@@ -88,7 +88,7 @@ def run_docker_compose():
     os.makedirs(f"{root_dir}/{RESULTS_FOLDER_NAME}", exist_ok=True)
     # --exit-code-from = reports exit code from this container
     # AND implies '--abort-on-container-exit' - will 'docker-compose down' after any container has exited
-    subprocess.run("docker-compose up --exit-code-from jmeter", shell=True)
+    subprocess.run("docker-compose up --exit-code-from jmeter", shell=True, check=True)
     print("docker-compose up done")
 
 
