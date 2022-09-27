@@ -71,6 +71,7 @@ def build_spline(branch):
     else:
         print(f"Pulling Spline into {spline_dir} (branch {branch})")
         repo = git.Repo(spline_dir)
+        repo.git.checkout(branch)
         repo.remotes[0].pull()
 
     os.chdir(f"{root_dir}/spline")
