@@ -15,7 +15,7 @@ services:
       context: ./spline/rest-gateway
       args:
         PROJECT_BUILD_FINAL_NAME: spline-rest-server-${SPLINE_CORE_VERSION}
-    image: testing-spline-rest-server:${SPLINE_CORE_VERSION} # locally built and used
+    image: local-only/spline-testing/testing-spline-rest-server:${SPLINE_CORE_VERSION} # locally built and used
     restart: on-failure
     ports:
       - ${SPLINE_REST_PORT}:8080
@@ -47,7 +47,7 @@ services:
       args:
         PROJECT_BUILD_FINAL_NAME: admin-${SPLINE_CORE_VERSION}
         IMAGE_NAME: spline-admin
-    image: testing-spline-db-admin:${SPLINE_CORE_VERSION} # locally built and used
+    image: local-only/spline-testing/testing-spline-db-admin:${SPLINE_CORE_VERSION} # locally built and used
     restart: on-failure
     network_mode: "bridge"
     entrypoint: >

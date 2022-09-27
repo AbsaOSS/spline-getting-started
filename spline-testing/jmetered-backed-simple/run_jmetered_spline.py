@@ -12,7 +12,10 @@ GIT_SPLINE_URL = "https://github.com/AbsaOSS/spline.git"
 SPLINE_DEFAULT_BRANCH = "develop"
 
 SPLINE_CORE_VERSION = "1.0.0-SNAPSHOT"  # needs to be in sync with .env
-CUSTOM_IMAGES = [f"testing-spline-db-admin:{SPLINE_CORE_VERSION}", f"testing-spline-rest-server:{SPLINE_CORE_VERSION}"]
+CUSTOM_IMAGES = [
+    f"local-only/spline-testing/testing-spline-db-admin:{SPLINE_CORE_VERSION}",
+    f"local-only/spline-testing/testing-spline-rest-server:{SPLINE_CORE_VERSION}"
+]
 
 SPLINE_BUILD = "{mvn} install -DskipTests"
 
@@ -88,7 +91,7 @@ def run_docker_compose():
     os.makedirs(f"{root_dir}/{RESULTS_FOLDER_NAME}", exist_ok=True)
     # --exit-code-from = reports exit code from this container
     # AND implies '--abort-on-container-exit' - will 'docker-compose down' after any container has exited
-    subprocess.run("docker-compose up --exit-code-from jmeter", shell=True, check=True)
+    subprocess.run("docker-compose up --exit-code-from jmeter --build", shell=True)
     print("docker-compose up done")
 
 
