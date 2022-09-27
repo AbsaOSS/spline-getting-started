@@ -3,7 +3,6 @@ import argparse
 import subprocess
 import docker
 import os
-import sys
 import platform
 import pandas as pd
 import matplotlib.pyplot as plt

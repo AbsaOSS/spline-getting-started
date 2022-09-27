@@ -11,6 +11,15 @@ Based on `docker-compose` using internally Jmeter, one can run:
 
 Tests are defined in `./tests` directory, results are appended to the results (created if empty) in `./results` directory next to it.
 
+There are certain requirements that must be met for the script to be used. Python-modules-wise, the requirements can be installed from the attached `requirements.txt` file using
+```bash
+pip install -r requirements.txt
+```
+As for environment requirements, following tools must be available on path:
+    - `docker`
+    - `docker-compose`
+    - `git`
+    - `mvn`
 
 ---
 

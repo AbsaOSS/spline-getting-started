@@ -2,3 +2,4 @@ docker_py==1.10.6
 matplotlib==3.6.0
 pandas==1.4.4
 setuptools==58.1.0
+GitPython==3.1.27
