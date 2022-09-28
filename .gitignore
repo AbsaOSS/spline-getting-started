@@ -1,7 +1,7 @@
 /.idea/
 .DS_Store
 
-/spline-testing/jmetered-backed-simple/spline/
-/spline-testing/jmetered-backed-simple/results/
-/spline-testing/jmetered-backed-simple/processed_results/
-/spline-testing/jmetered-backed-simple/graphs/
+/spline-testing/jmetered-spline-testing/spline/
+/spline-testing/jmetered-spline-testing/results/
+/spline-testing/jmetered-spline-testing/processed_results/
+/spline-testing/jmetered-spline-testing/graphs/

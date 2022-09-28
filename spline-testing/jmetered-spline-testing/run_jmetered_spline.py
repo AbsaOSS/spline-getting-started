@@ -91,7 +91,7 @@ def run_docker_compose():
     os.makedirs(f"{root_dir}/{RESULTS_FOLDER_NAME}", exist_ok=True)
     # --exit-code-from = reports exit code from this container
     # AND implies '--abort-on-container-exit' - will 'docker-compose down' after any container has exited
-    subprocess.run("docker-compose up --exit-code-from jmeter --build", shell=True)
+    subprocess.run("docker-compose up --exit-code-from jmeter --build", shell=True, check=True)
     print("docker-compose up done")
 
 
