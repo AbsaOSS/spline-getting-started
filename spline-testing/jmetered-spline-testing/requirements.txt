@@ -1,0 +1,6 @@
+docker==6.0.0
+docker-compose==1.29.2
+matplotlib==3.6.0
+pandas==1.4.4
+setuptools==58.1.0
+GitPython==3.1.27

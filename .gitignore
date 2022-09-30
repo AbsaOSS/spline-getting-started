@@ -1,2 +1,7 @@
 /.idea/
 .DS_Store
+
+/spline-testing/jmetered-spline-testing/spline/
+/spline-testing/jmetered-spline-testing/results/
+/spline-testing/jmetered-spline-testing/processed_results/
+/spline-testing/jmetered-spline-testing/graphs/
