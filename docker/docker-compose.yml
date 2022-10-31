@@ -60,7 +60,13 @@ services:
             echo waiting for spline
             sleep 5
           done
-          mvn test -Pexamples -Dspline.producer.url=$${SPLINE_PRODUCER_URL} -Dspline.mode=$${SPLINE_MODE} -Dhttp.proxyHost=$${HTTP_PROXY_HOST} -Dhttp.proxyPort=$${HTTP_PROXY_PORT} -Dhttp.nonProxyHosts=$${HTTP_NON_PROXY_HOSTS}
+          mvn test \\
+            -Pexamples \\
+            -Dspline.producer.url=$${SPLINE_PRODUCER_URL} \\
+            -Dspline.mode=$${SPLINE_MODE} \\
+            -Dhttp.proxyHost=$${HTTP_PROXY_HOST} \\
+            -Dhttp.proxyPort=$${HTTP_PROXY_PORT} \\
+            -Dhttp.nonProxyHosts=$${HTTP_NON_PROXY_HOSTS}
         fi
       "
     environment:
@@ -81,4 +87,3 @@ services:
       - ${SPLINE_UI_PORT}:8080
     links:
       - spline
-
