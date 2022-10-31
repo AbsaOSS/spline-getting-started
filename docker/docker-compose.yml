@@ -60,12 +60,7 @@ services:
             echo waiting for spline
             sleep 5
           done
-          mvn test -P examples \
-            -D spline.producer.url=$${SPLINE_PRODUCER_URL} \
-            -D spline.mode=$${SPLINE_MODE} \
-            -D http.proxyHost=$${HTTP_PROXY_HOST} \
-            -D http.proxyPort=$${HTTP_PROXY_PORT} \
-            -D http.nonProxyHosts=$${HTTP_NON_PROXY_HOSTS}
+          mvn test -Pexamples -Dspline.producer.url=$${SPLINE_PRODUCER_URL} -Dspline.mode=$${SPLINE_MODE} -Dhttp.proxyHost=$${HTTP_PROXY_HOST} -Dhttp.proxyPort=$${HTTP_PROXY_PORT} -Dhttp.nonProxyHosts=$${HTTP_NON_PROXY_HOSTS}
         fi
       "
     environment:
