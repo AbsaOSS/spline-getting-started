@@ -26,21 +26,13 @@ services:
     restart: on-failure
     ports:
       - ${SPLINE_REST_PORT}:8080
-    command: >
-      bash -c "
-        until curl --output /dev/null --silent --get --fail http://arangodb:8529/_db/spline/_admin/server/availability
-        do
-          echo waiting for Spline database to be ready...
-          sleep 5
-        done
-        catalina.sh run
-      "
     environment:
       SPLINE_DATABASE_CONNECTION_URL: 'arangodb://arangodb/spline'
       # by default /dev/random is used which may block
       CATALINA_OPTS: "-Dsecurerandom.source=file:/dev/./urandom -Djava.security.egd=file:/dev/./urandom"
     depends_on:
-      - arangodb
+      db-init:
+        condition: service_completed_successfully
 
   db-init:
     image: absaoss/spline-admin:${SPLINE_CORE_VERSION}
