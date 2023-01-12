@@ -101,7 +101,7 @@ Download Spline demo Docker-compose config files:
 mkdir spline
 cd spline
 
-wget https://raw.githubusercontent.com/AbsaOSS/spline-getting-started/main/docker/docker-compose.yml
+wget https://raw.githubusercontent.com/AbsaOSS/spline-getting-started/main/docker/compose.yaml
 wget https://raw.githubusercontent.com/AbsaOSS/spline-getting-started/main/docker/.env
 ```
 
@@ -113,7 +113,7 @@ DOCKER_HOST_EXTERNAL=18.116.202.35 docker-compose up
 ```
 
 The given Docker Compose config also runs a set of Spark examples to pre-populate the database. You can either ignore them, or disable them by
-commenting out the `agent` service block in the `docker-compose.yml` file:
+commenting out the `agent` service block in the `compose.yaml` file:
 
 ```yaml
 

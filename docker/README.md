@@ -2,7 +2,7 @@ This docker-compose config is designed to start all Spline Docker components in 
 It's especially useful for trying out and demo purposes.
 
 ```shell
-wget https://raw.githubusercontent.com/AbsaOSS/spline-getting-started/main/docker/docker-compose.yml
+wget https://raw.githubusercontent.com/AbsaOSS/spline-getting-started/main/docker/compose.yaml
 
 wget https://raw.githubusercontent.com/AbsaOSS/spline-getting-started/main/docker/.env
 

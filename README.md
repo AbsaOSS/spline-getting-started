@@ -18,7 +18,7 @@ The project consists of three main parts:
 Spin up a Spline server in a Docker
 
 ```shell
-wget https://raw.githubusercontent.com/AbsaOSS/spline-getting-started/main/docker/docker-compose.yml
+wget https://raw.githubusercontent.com/AbsaOSS/spline-getting-started/main/docker/compose.yaml
 
 wget https://raw.githubusercontent.com/AbsaOSS/spline-getting-started/main/docker/.env
 
