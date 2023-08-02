@@ -19,7 +19,7 @@ package org.example
 import org.apache.commons.configuration.MapConfiguration
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import za.co.absa.commons.HierarchicalObjectFactory
+import za.co.absa.spline.HierarchicalObjectFactory
 import za.co.absa.spline.agent.AgentConfig.ConfProperty
 
 import scala.collection.JavaConverters._

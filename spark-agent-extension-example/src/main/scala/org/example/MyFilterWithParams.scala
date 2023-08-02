@@ -19,7 +19,7 @@ package org.example
 import org.apache.commons.configuration.Configuration
 import org.apache.spark.internal.Logging
 import org.example.MyFilterWithParams.ConfProps
-import za.co.absa.commons.config.ConfigurationImplicits._
+import za.co.absa.spline.commons.config.ConfigurationImplicits._
 import za.co.absa.spline.harvester.postprocessing.AbstractPostProcessingFilter
 
 
