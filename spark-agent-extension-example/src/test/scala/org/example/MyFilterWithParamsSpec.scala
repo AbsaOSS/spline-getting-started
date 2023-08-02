@@ -16,30 +16,31 @@
 
 package org.example
 
-import org.apache.spark.sql.SparkSession
+import org.apache.commons.configuration.MapConfiguration
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import za.co.absa.commons.HierarchicalObjectFactory
-import za.co.absa.spline.harvester.conf.DefaultSplineConfigurer.ConfProperty
-import za.co.absa.spline.harvester.conf.StandardSplineConfigurationStack
+import za.co.absa.spline.agent.AgentConfig.ConfProperty
+
+import scala.collection.JavaConverters._
 
 class MyFilterWithParamsSpec extends AnyFlatSpec with Matchers {
   "My custom filter" should "load config parameters" in {
     val filterName = "myFilterWithParams"
-    val spark = SparkSession.builder
-      .master("local")
-      .config("spark.spline.postProcessingFilter", filterName)
-      .config(s"spark.spline.postProcessingFilter.$filterName.className", classOf[MyFilterWithParams].getName)
-      .config(s"spark.spline.postProcessingFilter.$filterName.foo", "awesome")
-      .config(s"spark.spline.postProcessingFilter.$filterName.bar", "42")
-      .getOrCreate()
+    val config = new MapConfiguration(Map(
+      "spline.postProcessingFilter" -> filterName,
+      s"spline.postProcessingFilter.$filterName.className" -> classOf[MyFilterWithParams].getName,
+      s"spline.postProcessingFilter.$filterName.foo" -> "awesome",
+      s"spline.postProcessingFilter.$filterName.bar" -> "42"
+    ).asJava)
 
     val factory =
-      new HierarchicalObjectFactory(StandardSplineConfigurationStack(spark), spark)
+      new HierarchicalObjectFactory(config, null)
         .child(ConfProperty.RootPostProcessingFilter)
         .child(filterName)
 
     val myFilter = factory.instantiate[MyFilterWithParams]()
+
     myFilter.foo should equal("awesome")
     myFilter.bar should equal(42)
   }

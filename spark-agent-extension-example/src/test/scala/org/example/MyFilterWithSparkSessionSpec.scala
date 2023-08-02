@@ -16,29 +16,41 @@
 
 package org.example
 
+import org.apache.commons.configuration.MapConfiguration
+import org.apache.spark.SparkContext
 import org.apache.spark.sql.SparkSession
+import org.mockito.Mockito.when
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
+import org.scalatestplus.mockito.MockitoSugar
 import za.co.absa.commons.HierarchicalObjectFactory
-import za.co.absa.spline.harvester.conf.DefaultSplineConfigurer.ConfProperty
-import za.co.absa.spline.harvester.conf.StandardSplineConfigurationStack
+import za.co.absa.spline.agent.AgentConfig.ConfProperty
 
-class MyFilterWithSparkSessionSpec extends AnyFlatSpec with Matchers {
+import scala.collection.JavaConverters._
+
+class MyFilterWithSparkSessionSpec extends AnyFlatSpec with Matchers with MockitoSugar {
   "My custom filter" should "get access to Spark Session" in {
     val filterName = "mySparkAwareFilter"
-    val spark = SparkSession.builder
-      .master("local")
-      .appName("My Awesome Application")
-      .config("spark.spline.postProcessingFilter", filterName)
-      .config(s"spark.spline.postProcessingFilter.$filterName.className", classOf[MyFilterWithSparkSession].getName)
-      .getOrCreate()
+    val sparkMock = mock[SparkSession]
+    val contextMock = mock[SparkContext]
+
+    when(sparkMock.sparkContext) thenReturn contextMock
+    when(contextMock.appName) thenReturn "My Awesome Application"
+
+    val config = new MapConfiguration(Map(
+      "spline.postProcessingFilter" -> filterName,
+      s"spline.postProcessingFilter.$filterName.className" -> classOf[MyFilterWithSparkSession].getName,
+      s"spline.postProcessingFilter.$filterName.foo" -> "awesome",
+      s"spline.postProcessingFilter.$filterName.bar" -> "42"
+    ).asJava)
 
     val factory =
-      new HierarchicalObjectFactory(StandardSplineConfigurationStack(spark), spark)
+      new HierarchicalObjectFactory(config, sparkMock)
         .child(ConfProperty.RootPostProcessingFilter)
         .child(filterName)
 
     val myFilter = factory.instantiate[MyFilterWithSparkSession]()
+
     myFilter.sparkAppName should equal("My Awesome Application")
   }
 }

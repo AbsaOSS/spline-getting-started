@@ -23,7 +23,7 @@ import za.co.absa.spline.harvester.postprocessing.AbstractPostProcessingFilter
 
 
 class MyFilterWithSparkSession(val sparkAppName: String)
-  extends AbstractPostProcessingFilter
+  extends AbstractPostProcessingFilter("My Filter With SparkSession")
     with Logging {
 
   def this(c: Configuration, sparkSession: SparkSession) = this(sparkSession.sparkContext.appName)

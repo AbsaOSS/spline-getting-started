@@ -17,19 +17,25 @@
 package org.example
 
 import org.apache.spark.internal.Logging
+import za.co.absa.spline.harvester.HarvestingContext
 import za.co.absa.spline.harvester.postprocessing.AbstractPostProcessingFilter
+import za.co.absa.spline.producer.model._
 
 class MyFilter
-  extends AbstractPostProcessingFilter
+  extends AbstractPostProcessingFilter("My Filter")
     with Logging {
 
   log.info("My custom filter created")
 
-  // Override methods that you need...
+  // Only override and implement methods that you need...
 
-  //  override def processExecutionEvent(event: ExecutionEvent, ctx: HarvestingContext): ExecutionEvent = ???
-  //  override def processExecutionPlan(plan: ExecutionPlan, ctx: HarvestingContext): ExecutionPlan = ???
-  //  override def processReadOperation(op: ReadOperation, ctx: HarvestingContext): ReadOperation = ???
-  //  override def processWriteOperation(op: WriteOperation, ctx: HarvestingContext): WriteOperation = ???
-  //  override def processDataOperation(op: DataOperation, ctx: HarvestingContext): DataOperation = ???
+  override def processExecutionEvent(event: ExecutionEvent, ctx: HarvestingContext): ExecutionEvent = event
+
+  override def processExecutionPlan(plan: ExecutionPlan, ctx: HarvestingContext): ExecutionPlan = plan
+
+  override def processReadOperation(op: ReadOperation, ctx: HarvestingContext): ReadOperation = op
+
+  override def processWriteOperation(op: WriteOperation, ctx: HarvestingContext): WriteOperation = op
+
+  override def processDataOperation(op: DataOperation, ctx: HarvestingContext): DataOperation = op
 }

@@ -31,7 +31,7 @@ object MyFilterWithParams {
 }
 
 class MyFilterWithParams(val foo: String, val bar: Int)
-  extends AbstractPostProcessingFilter
+  extends AbstractPostProcessingFilter("My Filter With Parameters")
     with Logging {
 
   def this(c: Configuration) = this(

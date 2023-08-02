@@ -1,4 +1,4 @@
-import Dependencies._
+import Dependencies.*
 
 lazy val scala212 = "2.12.15"
 lazy val scala211 = "2.11.12"
@@ -17,5 +17,6 @@ lazy val root = (project in file("."))
     libraryDependencies ++= Seq(
       splineAgentCore % Provided,
       scalaTest % Test,
+      scalatestplus % Test,
     )
   )
