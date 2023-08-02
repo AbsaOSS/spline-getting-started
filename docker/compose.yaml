@@ -44,15 +44,15 @@ services:
           echo waiting for ArangoDB server to be ready...
           sleep 5
         done
-        bash ./entrypoint.sh db-init arangodb://arangodb/spline -s
+        exec bash ./entrypoint.sh db-init arangodb://arangodb/spline -s
       "
     depends_on:
       - arangodb
 
   run-examples:
     image: absaoss/spline-spark-agent:${SPLINE_AGENT_VERSION}
-    command: >
-      bash -c "
+    entrypoint: >
+      tini -g -- bash -c "
         if [ ! -z "$SEED" ]
         then
           until curl --output /dev/null --silent --get --fail http://rest-server:8080
@@ -60,13 +60,7 @@ services:
             echo waiting for Spline server to be ready...
             sleep 5
           done
-          mvn test \\
-            -Pexamples \\
-            -Dspline.producer.url=$${SPLINE_PRODUCER_URL} \\
-            -Dspline.mode=$${SPLINE_MODE} \\
-            -Dhttp.proxyHost=$${HTTP_PROXY_HOST} \\
-            -Dhttp.proxyPort=$${HTTP_PROXY_PORT} \\
-            -Dhttp.nonProxyHosts=$${HTTP_NON_PROXY_HOSTS}
+          exec /entrypoint.sh
         fi
       "
     environment:
