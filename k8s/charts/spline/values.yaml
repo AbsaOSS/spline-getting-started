@@ -1,5 +1,5 @@
 image: "absaoss/spline-rest-server"
-imageTag: "0.7.5"
+imageTag: "0.7.9"
 #IfNotPresent #Always
 imagePullPolicy: IfNotPresent
 

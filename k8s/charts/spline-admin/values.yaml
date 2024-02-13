@@ -6,6 +6,6 @@ cmd: db-init
 extraArgs: "-s"
 imagePullPolicy: Always
 image: "absaoss/spline-admin"
-imageTag: "0.7.5"
+imageTag: "0.7.9"
 
 resources:

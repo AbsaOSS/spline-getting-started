@@ -2,4 +2,4 @@ apiVersion: v1
 description: A Helm chart for Spline-admin
 name: spline-admin
 version: 0.0.1
-appVersion: 0.7.5
+appVersion: 0.7.9
