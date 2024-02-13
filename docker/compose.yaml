@@ -35,7 +35,7 @@ services:
         condition: service_completed_successfully
 
   db-init:
-    image: absaoss/spline-admin:${SPLINE_CORE_VERSION}
+    image: absaoss/spline-admin:${SPLINE_ADMIN_VERSION}
     restart: on-failure
     entrypoint: >
       tini -g -- bash -c "
