@@ -22,7 +22,7 @@ services:
       ARANGO_NO_AUTH: 1
 
   rest-server:
-    image: absaoss/spline-rest-server:${SPLINE_CORE_VERSION}
+    image: ${SPLINE_SERVER_DOCKER_REPO_URL:-absaoss}/spline-rest-server:${SPLINE_SERVER_VERSION}
     restart: on-failure
     ports:
       - ${SPLINE_REST_PORT}:8080
@@ -35,7 +35,7 @@ services:
         condition: service_completed_successfully
 
   db-init:
-    image: absaoss/spline-admin:${SPLINE_ADMIN_VERSION}
+    image: ${SPLINE_SERVER_DOCKER_REPO_URL:-absaoss}/spline-admin:${SPLINE_SERVER_VERSION}
     restart: on-failure
     entrypoint: >
       tini -g -- bash -c "
@@ -50,7 +50,7 @@ services:
       - arangodb
 
   run-examples:
-    image: absaoss/spline-spark-agent:${SPLINE_AGENT_VERSION}
+    image: ${SPLINE_AGENT_DOCKER_REPO_URL:-absaoss}/spline-spark-agent:${SPLINE_AGENT_VERSION}
     entrypoint: >
       tini -g -- bash -c "
         if [ ! -z "$SEED" ]
@@ -70,7 +70,7 @@ services:
       - rest-server
 
   ui:
-    image: absaoss/spline-web-ui:${SPLINE_UI_VERSION}
+    image: ${SPLINE_UI_DOCKER_REPO_URL:-absaoss}/spline-web-ui:${SPLINE_UI_VERSION}
     restart: on-failure
     environment:
       # The consumer URL is used by the web browser
