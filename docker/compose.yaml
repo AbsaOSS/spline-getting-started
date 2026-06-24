@@ -39,13 +39,13 @@ services:
     image: ${SPLINE_SERVER_DOCKER_REPO_URL:-absaoss}/spline-admin:${SPLINE_SERVER_VERSION}
     restart: on-failure
     entrypoint: >
-      tini -g -- bash -c "
+      tini -g -- sh -c "
         until curl --output /dev/null --silent --get --fail http://arangodb:8529/_admin/server/availability
         do
           echo waiting for ArangoDB server to be ready...
           sleep 5
         done
-        exec bash ./entrypoint.sh db-init arangodb://arangodb/spline -s
+        exec sh ./entrypoint.sh db-init arangodb://arangodb/spline -s
       "
     depends_on:
       - arangodb
@@ -53,7 +53,7 @@ services:
   run-examples:
     image: ${SPLINE_AGENT_DOCKER_REPO_URL:-absaoss}/spline-spark-agent:${SPLINE_AGENT_VERSION}
     entrypoint: >
-      tini -g -- bash -c "
+      tini -g -- sh -c "
         if [ ! -z "$SEED" ]
         then
           until curl --output /dev/null --silent --get --fail http://rest-server:8080
